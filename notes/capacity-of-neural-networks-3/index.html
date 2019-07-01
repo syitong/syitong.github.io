@@ -1,0 +1,618 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.16.4 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>            Capacity of Neural Networks (3): Main Results - 孙轶同的博客      Yitong’s Blog      </title>
+<meta name="description" content="In this note, we will look at the Rademacher complexity of 2-layer neural networks, and compare it with the result of kernel method. This is the main result of (Bartlett &amp; Mendelson, 2003). We rephrase it as follows.">
+
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="孙轶同的博客|Yitong's Blog">
+<meta property="og:title" content="Capacity of Neural Networks (3): Main Results">
+<meta property="og:url" content="https://blog.syitong.me/notes/capacity-of-neural-networks-3/">
+
+
+  <meta property="og:description" content="In this note, we will look at the Rademacher complexity of 2-layer neural networks, and compare it with the result of kernel method. This is the main result of (Bartlett &amp; Mendelson, 2003). We rephrase it as follows.">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2018-01-12T00:00:00-05:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://blog.syitong.me/notes/capacity-of-neural-networks-3/">
+
+
+
+
+
+
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Yitong Sun",
+      "url": "https://blog.syitong.me",
+      "sameAs": null
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="https://blog.syitong.me/feed.xml" type="application/atom+xml" rel="alternate" title="孙轶同的博客|Yitong's Blog Feed">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- Mathjax support -->
+
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="https://blog.syitong.me/assets/css/main.css">
+
+<!--[if lte IE 9]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- Baidu Autopush -->
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<!-- Baidu header-->
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">孙轶同的博客|Yitong's Blog</a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/categories/" >Categories</a>
+            </li><li class="masthead__menu-item">
+              <a href="/tags/" >Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/years/" >Years</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle Menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+
+      
+        <img src="/assets/images/icon128.png" alt="Yitong Sun" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Yitong Sun</h3>
+    
+    
+      <p class="author__bio" itemprop="description">
+        长风破浪会有时
+      </p>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Capacity of Neural Networks (3): Main Results">
+    <meta itemprop="description" content="In this note, we will look at the Rademacher complexity of 2-layer neural networks, and compare it with the result of kernel method. This is the main result of (Bartlett &amp; Mendelson, 2003). We rephrase it as follows.">
+    <meta itemprop="datePublished" content="January 12, 2018">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Capacity of Neural Networks (3): Main Results
+</h1>
+          
+            <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  1 minute read
+</p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>In this note, we will look at the Rademacher complexity of 2-layer neural networks, and compare it with the result of kernel method. This is the main result of <a class="citation" href="#Bartlett2003">(Bartlett &amp; Mendelson, 2003)</a>. We rephrase it as follows.</p>
+
+<p><strong>Theorem.</strong> Suppose that <script type="math/tex">\phi: \mathbb{R}\to [-1,1]</script> has Lipschitz constant <script type="math/tex">L</script>. Define the class computed by a two-layer neural network with weights norm constraints as</p>
+
+<script type="math/tex; mode=display">\begin{equation}
+F=\left\{x\mapsto \sum_i w_i\phi(v_i\cdot x) \mid \Vert w\Vert_1 \le 1, \Vert v_i \Vert_2 \le B\right\}\,.
+\end{equation}</script>
+
+<p>Then for <script type="math/tex">x_1,\ldots,x_n\in \mathbb{R}^d</script>,</p>
+
+<script type="math/tex; mode=display">\begin{equation}
+\hat{\mathfrak{G}}_m(F) \le \frac{cLB}{\sqrt{m}}\max_i\Vert x_i\Vert_2\,,
+\end{equation}</script>
+
+<p>where <script type="math/tex">x_i = (x_{i1},\ldots,x_{id})</script>.</p>
+
+<p>Compared with the original statement, we drop the assumption <script type="math/tex">\phi(0)=0</script>, which is not necessary in our concise form of contraction inequality. And we change the constraint over the weights of the bottom layer from 1-norm to 2-norm. This gives us the result of a better form and simpler proof.</p>
+
+<p>With 2-norm constraint, the proof of this theorem can be easily obtained by the contraction inequality.</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{align}
+m\hat{\mathfrak{G}}_m(F) & = \mathbb{E}_g\sup_{w,v_js}\sum_{i=1}^m g_i\sum_j w_j\phi(v_j\cdot x_i) \\
+	& = \mathbb{E}_g\sup_{w,v_js}\sum_j w_j \sum_{i=1}^m g_i\phi(v_j\cdot x_i) \\
+	& \le \mathbb{E}_g\sup_{v}\sum_{i=1}^mg_i\phi(v\cdot x_i) \\
+	& \le L\mathbb{E}_g\sup_{v}\sum_{i=1}^mg_iv\cdot x_i \tag{1}\\
+	& \le LB\mathbb{E}_g \left\Vert \sum_{i=1}^m g_ix_i \right\Vert_2 \\
+	& = LB\mathbb{E}_g\left(\left(\sum g_i x_i\right)^2\right)^{1/2} \\
+	& \le LB\left(\mathbb{E}\left(\sum g_i x_i\right)^2\right)^{1/2} \\
+	& \le LB(\sqrt{m}\max_i \Vert x_i\Vert)\,.
+\end{align} %]]></script>
+
+<p>This case is actually similar with the Rademacher complexity of the kernel method, where instead of <script type="math/tex">\max_i \Vert x_i \Vert</script>, <script type="math/tex">\max_i \langle \phi(x_i),\phi(x_i) \rangle^{1/2} \le \sup_x k(x,x)^{1/2}</script> controls the complexity.</p>
+
+<p>In the original theorem, <script type="math/tex">\Vert v_i \Vert_1\le B</script>. Then (1) is less than <script type="math/tex">B\mathbb{E}\max_j \sum_i g_i x_{ij}</script>. To control this quantity, Sudakov-Fernique’s inequality is used, which is a variant of Slepian’s inequality</p>
+
+<p><strong>Theorem</strong>. (Sudakov-Fernique’s inequality) Let <script type="math/tex">(X_t)_{t\in T}</script> and <script type="math/tex">(Y_t)_{t\in T}</script> be two Gaussian processes. Assume that for all <script type="math/tex">t,s\in T</script>, we have</p>
+
+<script type="math/tex; mode=display">\begin{equation}
+\mathbb{E}(X_t - X_s)^2 \le \mathbb{E}(Y_t - Y_s)^2\,.
+\end{equation}</script>
+
+<p>Then,</p>
+
+<script type="math/tex; mode=display">\begin{equation}
+\mathbb{E}\sup_{t\in T}X_t \le \mathbb{E}\sup_{t\in T}Y_t\,.
+\end{equation}</script>
+
+<p>To use this theorem to prove the 1-norm constraint case, we set <script type="math/tex">X_j = \sum_i g_ix_{ij}</script> and <script type="math/tex">Y_j = g_j \max_{j,k}\left(\mathbb{E}(X_j - X_k)^2\right)^{1/2}</script>. Then,</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{align}
+\mathbb{E}(Y_j - Y_k)^2 & = \mathbb{E}(g_j - g_k)^2\max_{j,k}\mathbb{E}(X_j - X_k)^2 \\
+	& = 2\max_{j,k}\mathbb{E}(X_j - X_k)^2 \\
+	& \ge \mathbb{E}(X_j - X_k)^2\,.
+\end{align} %]]></script>
+
+<p>And according to Sudakov-Fernique’s inequality, we have</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{align}
+\mathbb{E}\max_j\sum_i g_ix_{ij} & = \mathbb{E}\max_j X_j \\
+	& \le \mathbb{E}\max_j Y_j \\
+	& = \max_{j,k}\left(\mathbb{E}(X_j-X_k)^2\right)^{1/2}\mathbb{E}\max_j g_j \\
+	& \le c\sqrt{\ln{d}}\max_{j,k}\left(\mathbb{E}(X_j-X_k)^2\right)^{1/2} \\
+	& = c\sqrt{\ln d}\max_{j,k}\Vert x_{:j}-x_{:k}\Vert\,.
+\end{align} %]]></script>
+
+<p>The Rademacher complexity can be easily obtained by using the fact that <script type="math/tex">c\mathfrak{R}_m\le\mathfrak{G}_m</script>.</p>
+
+<h2 id="reference">Reference</h2>
+
+<ol class="bibliography"><li><span id="Bartlett2003">Bartlett, P. L., &amp; Mendelson, S. (2003). Rademacher and Gaussian Complexities: Risk Bounds and Structural Results. <i>J. Mach. Learn. Res.</i>, <i>3</i>, 463–482.</span></li></ol>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/tags/neural-networks" class="page__taxonomy-item" rel="tag">neural networks</a><span class="sep">, </span>
+    
+      
+      
+      <a href="/tags/statistical-learning" class="page__taxonomy-item" rel="tag">statistical learning</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/notes" class="page__taxonomy-item" rel="tag">notes</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2018-01-12T00:00:00-05:00">January 12, 2018</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+    <h4 class="page__share-title">Share on</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?text=Capacity+of+Neural+Networks+%283%29%3A+Main+Results%20https%3A%2F%2Fblog.syitong.me%2Fnotes%2Fcapacity-of-neural-networks-3%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fblog.syitong.me%2Fnotes%2Fcapacity-of-neural-networks-3%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fblog.syitong.me%2Fnotes%2Fcapacity-of-neural-networks-3%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/notes/capacity-of-neural-networks-2/" class="pagination--pager" title="Capacity of Neural Networks (2): Contraction Inequality
+">Previous</a>
+    
+    
+      <a href="/notes/capacity-of-neural-networks-4/" class="pagination--pager" title="Capacity of Neural Networks (4): VC-Dimension and Rademacher Complexity
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/notes/sort-select/" rel="permalink">快速排序与快速选择算法
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">之所以突然会对这个问题感兴趣是因为，大概一年前，在毫无准备的情况下去参加某互联网公司的面试，被问到了这样一个问题：“给定一个长度为n的数列，如何快速的找出其中第m大的元素。假设m远小于n。”因为对排序和选择算法完全不熟悉，只知道quicksort的时间复杂度应该是，以及从数列中找出最大值的复杂度是 。只好回答最简...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/articles/rff-intro/" rel="permalink">What Is Random Fourier Features Method?
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  2 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">Random Fourier features method, or more general random features method is a method to help transform data which are not linearly separable to linearly separa...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/articles/tmux-rename/" rel="permalink">如何阻止ssh重命名tmux窗口
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">在使用tmux多窗口终端时，每次登录学校的服务器后，窗口的标签就会被改成与服务器的prompt相同。而且登出后也不会改回来，导致tmux经常几个窗口的名字都很长，也没有反映窗口当时的状况。之所以会这样，是因为tmux默认允许一些进程修改窗口名，而ssh对终端窗口的命名规则是由服务器上的配置文件决定的。
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/articles/cb-setup/" rel="permalink">HiDPI Chromebook上Crouton的设置
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">入手HP Chromebook 13 g1大半年，一开始就安装了Gallium OS。但Gallium OS迟迟无法解决intel skylake model上的音频输出问题，加上Gallium OS的电源管理比Chrome OS要弱不少，不接电源的情况下无法长时间的使用。忍了大半年后，终于回到了Crouton的...</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2019 Yitong Sun. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.8.2/js/all.js" integrity="sha384-DJ25uNYET2XCl5ZF++U8eNxPWqcKohUUBUpKGlNLMchM7q4Wjg2CUpjHLaL8yYPH" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

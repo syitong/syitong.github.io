@@ -1,0 +1,695 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.5">Jekyll</generator><link href="https://blog.syitong.me/feed.xml" rel="self" type="application/atom+xml" /><link href="https://blog.syitong.me/" rel="alternate" type="text/html" /><updated>2019-07-01T17:56:31-04:00</updated><id>https://blog.syitong.me/feed.xml</id><title type="html">孙轶同的博客|Yitong’s Blog</title><subtitle>ABOUT MATH AND MORE.</subtitle><author><name>Yitong Sun</name></author><entry><title type="html">快速排序与快速选择算法</title><link href="https://blog.syitong.me/notes/sort-select/" rel="alternate" type="text/html" title="快速排序与快速选择算法" /><published>2018-08-31T00:00:00-04:00</published><updated>2018-08-31T00:00:00-04:00</updated><id>https://blog.syitong.me/notes/sort-select</id><content type="html" xml:base="https://blog.syitong.me/notes/sort-select/">&lt;p&gt;之所以突然会对这个问题感兴趣是因为，大概一年前，在毫无准备的情况下去参加某互联网公司的面试，被问到了这样一个问题：“给定一个长度为n的数列，如何快速的找出其中第m大的元素。假设m远小于n。”因为对排序和选择算法完全不熟悉，只知道quicksort的时间复杂度应该是&lt;script type=&quot;math/tex&quot;&gt;n\log(n)&lt;/script&gt;，以及从数列中找出最大值的复杂度是 &lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt;。只好回答最简单暴力的算法，每次选出最大值然后剔除，这样m次后就找到了第m大的元素，相应的复杂度是&lt;script type=&quot;math/tex&quot;&gt;mn&lt;/script&gt;。其实当时心里也清楚这显然离最优解有相当大的差距。毕竟这种算法不仅把第m大的元素找出来，还把前m大的都找了出来，而且排好了顺序，多做了很多无用功。况且找出最大值的复杂度只是&lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt;，找出第m大的不应该比这一复杂度高太多。最近又要准备面试，刷算法题，所以就把排序和选择问题专门看了看。&lt;/p&gt;
+
+&lt;p&gt;首先，排序问题和选择问题相关但又不同。排序问题的复杂度要高于选择问题。但是选择问题在解决的过程中又不可避免的会一定程度的对数列进行部分排序——当然如果仅仅是为了选择，副产品部分排序越少越好。我们这里集中在快速排序quicksort，快速选择quickselect，以及mergesort，三种算法。从名字就可以看出，一三是排序算法，二是选择算法。其中quickselect又涉及一种pivotselect的算法：median of medians。&lt;/p&gt;
+
+&lt;h2 id=&quot;quicksort&quot;&gt;QuickSort&lt;/h2&gt;
+
+&lt;p&gt;quicksort算法的核心想法就是“分而治之”(divide and conquer)。随机选择一个轴(pivot)，把大于轴的数移到轴的左侧，小于轴的值移到右侧，这样轴的位置就处于最终正确排序的位置。然后对轴两侧重复这一操作，直到排出全序。时间复杂度的分析也很简单，由于每一轮的比较操作都小于&lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt;，所以只要知道迭代多少次停止即可。最好的情况，每次都恰好选到中位数做轴，这样最多&lt;script type=&quot;math/tex&quot;&gt;\log_2(n)&lt;/script&gt;轮就可以完成排序，总的时间复杂度就是&lt;script type=&quot;math/tex&quot;&gt;n\log(n)&lt;/script&gt;。最差的情况，每次都选到最大或最小值做轴，这样相当于每轮迭代序列的长度只减少了1，所以就需要&lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt;轮才能完成排序，复杂度就是&lt;script type=&quot;math/tex&quot;&gt;n^2&lt;/script&gt;。至于平均的情况，假设长度为&lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt;的序列quicksort的平均时间代价是&lt;script type=&quot;math/tex&quot;&gt;C(n)&lt;/script&gt;，而排序后轴值左边的序列长度为&lt;script type=&quot;math/tex&quot;&gt;i&lt;/script&gt;，那么&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+C(n) &amp; = n-1 + \frac{1}{n}\sum_{i=0}^{n-1}C(n-i-1)+C(i) \\
+C(n) &amp; = n-1 + \frac{2}{n}\sum_{i=0}^{n-1}C(i) \\
+nC(n)-(n-1)C(n-1) &amp; = 2(n-1) + 2C(n-1) \\
+C(n) &amp; = \frac{2(n-1)}{n} + \frac{n+1}{n}C(n-1) \\
+\frac{C(n)}{2n} &amp; \le \frac{C(n-1)}{2(n-1)} + \frac1n \\
+C(n) &amp; \le 2n\ln(n)\,. 
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;h2 id=&quot;quickselect&quot;&gt;QuickSelect&lt;/h2&gt;
+
+&lt;p&gt;下面我们在来看看快速选择算法。核心思想与quicksort一样，也是不断的将轴放到正确的位置。但因为只需要选择一个元素，所以每次只需要对包含目标元素的那一侧继续处理。对于简单版本的quickselect来说，这就足够了，其平均时间代价就是&lt;script type=&quot;math/tex&quot;&gt;O(n)&lt;/script&gt;。因为轴是按照均匀分布选取，那么它落在四分位区间的概率就是&lt;script type=&quot;math/tex&quot;&gt;1/2&lt;/script&gt;，也就是说较长的那边最多也只有&lt;script type=&quot;math/tex&quot;&gt;3n/4&lt;/script&gt;。而另外&lt;script type=&quot;math/tex&quot;&gt;1/2&lt;/script&gt;的概率，我们用&lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt;作为上界。这样按照不断选取子序列的方式，到子序列长度为&lt;script type=&quot;math/tex&quot;&gt;1&lt;/script&gt;。假设长度为&lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt;的情况下，quickselect的平均代价为&lt;script type=&quot;math/tex&quot;&gt;C(n)&lt;/script&gt;，那么我们就有&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+C(n) &amp; \le n+\frac12C(3n/4)+\frac12C(n) \\
+C(n) &amp; \le 2n + C(3n/4) \\
+C(n) &amp; \le \sum_{i=0}^\infty\left(\frac34\right)^i2n \\
+&amp; = O(n)\,.
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;当然，最差的情况时间代价会达到&lt;script type=&quot;math/tex&quot;&gt;n^2&lt;/script&gt;。&lt;/p&gt;
+
+&lt;p&gt;为了避免最差的情况出现，我们在选择轴的时候就需要慎重一些。相应的就有了median of medians的算法。其想法就是把当前序列划分成长度为5或者更大的奇数的片段，找出每个片段的中位数，再去找出这些中位数的中位数。在一个小片段上求中位数显然只需要依赖于片段长度的时间，在所有片段上都求中位数就是&lt;script type=&quot;math/tex&quot;&gt;O(n)&lt;/script&gt;的复杂度。而去求中位数们的中位数时，使用迭代回quickselect的办法。迭代回去的序列长度就只有&lt;script type=&quot;math/tex&quot;&gt;n/5&lt;/script&gt;。而找出中位数的中位数作为轴，最差也能使序列长度减少&lt;script type=&quot;math/tex&quot;&gt;1/5+1/10 = 3/10&lt;/script&gt;。假设结合了median of medians的quickselect的平均代价为&lt;script type=&quot;math/tex&quot;&gt;C(n)&lt;/script&gt;，那么，&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+C(n) &amp; \le n + C(7n/10) + C(n/5) + O(n) \\
+C(n) &amp; \le O(n) + C(9n/10) \\
+&amp; = O(n)\,.
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;显然，median of medians与quicksort结合也可以将它在最差情形下的时间代价提升至&lt;script type=&quot;math/tex&quot;&gt;O(n\log n)&lt;/script&gt;。&lt;/p&gt;
+
+&lt;h2 id=&quot;mergesort&quot;&gt;MergeSort&lt;/h2&gt;
+
+&lt;p&gt;最后我们再来看看mergesort。它是一种最好，最差和平均复杂度都是&lt;script type=&quot;math/tex&quot;&gt;O(n\log n)&lt;/script&gt;的排序算法。其想法十分简单，就是把序列分解为长度为2的小片段，经过&lt;script type=&quot;math/tex&quot;&gt;n/2&lt;/script&gt;次比较，将他们完全排序。然后再将小片段两两合并，形成每个长度为4的片段最多需要3次比较，共&lt;script type=&quot;math/tex&quot;&gt;3n/4&lt;/script&gt;次比较。然后继续两两结合，以此类推。显然总的时间复杂度就介于&lt;script type=&quot;math/tex&quot;&gt;n\log_2 n&lt;/script&gt;与&lt;script type=&quot;math/tex&quot;&gt;\frac n2\log_2 n&lt;/script&gt;之间。但是mergesort的优势在于易于并行实现。&lt;/p&gt;</content><author><name>Yitong Sun</name></author><category term="algorithms" /><summary type="html">之所以突然会对这个问题感兴趣是因为，大概一年前，在毫无准备的情况下去参加某互联网公司的面试，被问到了这样一个问题：“给定一个长度为n的数列，如何快速的找出其中第m大的元素。假设m远小于n。”因为对排序和选择算法完全不熟悉，只知道quicksort的时间复杂度应该是，以及从数列中找出最大值的复杂度是 。只好回答最简单暴力的算法，每次选出最大值然后剔除，这样m次后就找到了第m大的元素，相应的复杂度是。其实当时心里也清楚这显然离最优解有相当大的差距。毕竟这种算法不仅把第m大的元素找出来，还把前m大的都找了出来，而且排好了顺序，多做了很多无用功。况且找出最大值的复杂度只是，找出第m大的不应该比这一复杂度高太多。最近又要准备面试，刷算法题，所以就把排序和选择问题专门看了看。</summary></entry><entry><title type="html">What Is Random Fourier Features Method?</title><link href="https://blog.syitong.me/articles/rff-intro/" rel="alternate" type="text/html" title="What Is Random Fourier Features Method?" /><published>2018-08-29T00:00:00-04:00</published><updated>2018-08-29T00:00:00-04:00</updated><id>https://blog.syitong.me/articles/rff-intro</id><content type="html" xml:base="https://blog.syitong.me/articles/rff-intro/">&lt;p&gt;Random Fourier features method, or more general random features method is a method to help transform data which are not linearly separable to linearly separable, so that we can use a linear classifier to complete the classification task. For example, in the left illustration,
+&lt;img src=&quot;/assets/images/2018-08-29-fig1.jpg&quot; alt=&quot;fig1&quot; width=&quot;800px&quot; class=&quot;align-center&quot; /&gt;
+the red dots and blue crosses are not linearly separable. By applying the transform&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+\tilde{x} = \cos(x)\quad\tilde{y} = \cos(x-\pi/2)\,,
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;we get the right illustration and the data are linearly separable. However, in practice, we want to reduce human’s intervention as much as possible, or we do not have much knowledge about what transform is appropriate. So instead of designing specific transform for each task, we just construct the following ones&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+\tilde{x}_1 &amp; = \cos(\gamma\omega_1\cdot x + b_1) \\
+\tilde{x}_2 &amp; = \cos(\gamma\omega_2\cdot x + b_2) \\
+ &amp; \vdots \\
+\tilde{x}_N &amp; = \cos(\gamma\omega_N\cdot x + b_N) \\
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;with &lt;script type=&quot;math/tex&quot;&gt;\omega_i,b_i&lt;/script&gt;s being randomly selected, usually Gaussian for &lt;script type=&quot;math/tex&quot;&gt;\omega&lt;/script&gt;s and uniform in &lt;script type=&quot;math/tex&quot;&gt;[0,\pi]&lt;/script&gt; for &lt;script type=&quot;math/tex&quot;&gt;b&lt;/script&gt;s. This is called random Fourier features. There is still a parameter that requires human’s knowledge is the bandwidth parameter &lt;script type=&quot;math/tex&quot;&gt;\gamma&lt;/script&gt;. A larger &lt;script type=&quot;math/tex&quot;&gt;\gamma&lt;/script&gt; increases the chance of getting a longer vector dot &lt;script type=&quot;math/tex&quot;&gt;x&lt;/script&gt;. Using the illustration above, we can see that too large coefficiens in front of &lt;script type=&quot;math/tex&quot;&gt;x&lt;/script&gt; will wind data points too many rounds and result in points interlacing with each other. If the coefficients are too small, the transform is close to a linear one and does not help (actually in the illustration above, it works, but if we consider the oxox distribution, we will get a trouble). So an appropriate &lt;script type=&quot;math/tex&quot;&gt;\gamma&lt;/script&gt; is crucial for this method to be efficient. Usually it is determined by checking the performance of different &lt;script type=&quot;math/tex&quot;&gt;\gamma&lt;/script&gt;s on an validation data set, which is essentially an ugly trial and error.&lt;/p&gt;
+
+&lt;p&gt;Another important parameter is the number of features &lt;script type=&quot;math/tex&quot;&gt;N&lt;/script&gt;. Theoretically, with sufficiently many features, the training set is always linearly separable. However it may not generalize well to testing set or it costs too much computation resource.&lt;/p&gt;
+
+&lt;p&gt;At the end, let’s talk a bit about the history. Using non-linear transform to aid classification and regression has been studied since traditional statistics. Randomly assigning the weights inside the non-linear nodes were also considered after the feedforward network was proposed in 1950s. The appealing part is that it is a convex optimization problem compared to the usual neural networks. In 2007 Rahimi and Recht’s work proposed random Fourier features and pointed out its connection to kernel method. Since then it has attracted more attention. After the revival of deep neural networks, we now know that shallow models like random features plus a linear classifier have disadvantages in representation capability compared to deep models. But it may still provide an efficient method for many problems and a way to understand the generalization performance of neural networks.&lt;/p&gt;</content><author><name>Yitong Sun</name></author><category term="kernel method" /><category term="statistical learning" /><summary type="html">Random Fourier features method, or more general random features method is a method to help transform data which are not linearly separable to linearly separable, so that we can use a linear classifier to complete the classification task. For example, in the left illustration, the red dots and blue crosses are not linearly separable. By applying the transform</summary></entry><entry><title type="html">HiDPI Chromebook上Crouton的设置</title><link href="https://blog.syitong.me/articles/cb-setup/" rel="alternate" type="text/html" title="HiDPI Chromebook上Crouton的设置" /><published>2018-08-28T00:00:00-04:00</published><updated>2018-08-28T00:00:00-04:00</updated><id>https://blog.syitong.me/articles/cb-setup</id><content type="html" xml:base="https://blog.syitong.me/articles/cb-setup/">&lt;p&gt;入手HP Chromebook 13 g1大半年，一开始就安装了Gallium OS。但Gallium OS迟迟无法解决intel skylake model上的音频输出问题，加上Gallium OS的电源管理比Chrome OS要弱不少，不接电源的情况下无法长时间的使用。忍了大半年后，终于回到了Crouton的方案。当初离开Crouton主要是遇上了休眠崩溃的bug，如今已经修复，所以可以放心使用。更主要的是，谷歌已经开始在自家的旗舰Pixelbook上支持Linux，更有Android的加持，让我对回到原生Chrome OS抱有更多的期待。&lt;/p&gt;
+
+&lt;p&gt;这里记录的主要是这次装机中遇到的一些问题和相应的解决方案。&lt;/p&gt;
+
+&lt;h2 id=&quot;1-target的选择&quot;&gt;1. Target的选择&lt;/h2&gt;
+
+&lt;p&gt;这次安装时最初想尝试一下最轻量级的安装，也就是xiwi+cli的组合。也就意味着大部分操作要在命令行完成。&lt;del&gt;但是对于已经用惯Atom编辑器的我来说，视窗界面肯定也是不可少的，这可以用xiwi实现。然而立刻就发现xiwi对HiDPI的支持很差，虽然crouton extension支持HiDPI，但是开启后字体变得非常小，完全无法使用。&lt;strong&gt;原因大概是&lt;a href=&quot;https://github.com/dnschneid/crouton/wiki/i3&quot;&gt;xiwi的视窗管理是通过i3实现&lt;/a&gt;？&lt;/strong&gt;即使安装了Atom HiDPI插件，菜单的字体仍然无法挽救。陆续尝试的synaptic软件管理器也有这个问题。而在安装了xfce target之后，将font dpi调至192，在xfce4桌面环境中(仍然由xiwi驱动)所有的菜单字体都恢复正常，使用xiwi打开thunar文件管理器菜单字体也正常，而xiwi单独打开synaptic和atom仍然不行。大概是因为软件对视窗管理的依赖有所不同？最后仍然决定使用从前的方式，依靠xfce4进行视窗管理。&lt;/del&gt;事实证明确实是因为使用xiwi作为图形界面时，xfce4的相关设置不会被自动使用。而在&lt;code class=&quot;highlighter-rouge&quot;&gt;~/.xiwirc&lt;/code&gt;中写入一行&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;xfsettingsd&amp;amp;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;问题就得到了解决。&lt;code class=&quot;highlighter-rouge&quot;&gt;xfsettingsd&lt;/code&gt;是xfce4的设置守护进程（daemon），图形界面会利用该进程读取设置参数，&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;amp;&lt;/code&gt;表示在后台运行。在没有它的情况下，图形窗口无法获取xfce4的设置，所以只能以i3图形管理器启动。在xfce4已经为高清显示器做好配置后，该进程可以使得xiwi窗口采用该配置。这是在&lt;a href=&quot;https://github.com/dnschneid/crouton/issues/2020#issuecomment-131766723&quot;&gt;这里&lt;/a&gt;偶然看到的。&lt;/p&gt;
+
+&lt;h2 id=&quot;2-dropbox&quot;&gt;2. Dropbox&lt;/h2&gt;
+
+&lt;p&gt;另外一个促使我使用xfce4桌面的原因是Dropbox在安装时要弹出图形界面进行设置，虽然之后的运行其实并不依赖图形界面。&lt;/p&gt;
+
+&lt;p&gt;为了节省初次同步的时间，最好先暂停同步，然后将原有的Dropbox文件夹中的内容全部复制到新的Dropbox文件夹下。然后在开启同步。&lt;/p&gt;
+
+&lt;p&gt;Dropbox图标会出现在panel的通知栏，通知栏如果设置为&lt;code class=&quot;highlighter-rouge&quot;&gt;automatically hide the panel: intelligently&lt;/code&gt;，同时试图右键通知栏图标会导致系统的崩溃。&lt;/p&gt;
+
+&lt;p&gt;更新：根据dropbox&lt;a href=&quot;https://www.dropbox.com/install-linux&quot;&gt;官方页面&lt;/a&gt;，dropbox也支持无视窗安装。具体步骤如下（未验证）：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; ~ &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; wget &lt;span class=&quot;nt&quot;&gt;-O&lt;/span&gt; - &lt;span class=&quot;s2&quot;&gt;&quot;https://www.dropbox.com/download?plat=lnx.x86_64&quot;&lt;/span&gt; | &lt;span class=&quot;nb&quot;&gt;tar &lt;/span&gt;xzf -
+~/.dropbox-dist/dropboxd
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;并下载相关的python script进行控制。&lt;/p&gt;
+
+&lt;h2 id=&quot;3-中文字体显示与locale设置&quot;&gt;3. 中文字体显示与locale设置&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;xfce target的安装没有包括语言支持？&lt;/strong&gt;更没有没有中文字体，会导致中文字体无法显示。需要手动安装，我选择的是Noto字体。安装后还要检查locale设置是否为utf8编码,&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;locale
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;我的情况是默认为POSIX，而非&lt;code class=&quot;highlighter-rouge&quot;&gt;en_US.UTF-8&lt;/code&gt;，还需要先下载&lt;code class=&quot;highlighter-rouge&quot;&gt;language-pack-en-base&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;而中文输入法则可以使用通常的fcitx方案，结合rime输入法。要在xiwi视窗中调用该输入法，可以在&lt;code class=&quot;highlighter-rouge&quot;&gt;~/.xiwirc&lt;/code&gt;文件中加入&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;fcitx start
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;并设置相应的调用快捷键。rime输入法默认繁体优先，这一点也可以通过将&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;.config/fcitx/rime/luna_pinyin.schema.yaml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;文件中的&lt;code class=&quot;highlighter-rouge&quot;&gt;switches: reset: 0&lt;/code&gt;改为&lt;code class=&quot;highlighter-rouge&quot;&gt;1&lt;/code&gt;进行修改。这里参考了知乎上的问题&lt;a href=&quot;https://www.zhihu.com/question/51573727&quot;&gt;如何修改鼠须管默认简繁体&lt;/a&gt;。&lt;/p&gt;
+
+&lt;h2 id=&quot;4-hidpi&quot;&gt;4. HiDPI&lt;/h2&gt;
+
+&lt;p&gt;xfce桌面环境在调整字体dpi后大部分窗口图标依然比较小，需要在windows manager中设为default-hdpi风格。识别的display resolution始终是默认分辨率。另外选择了numix-circ图标和adapta主题，和Chrome OS的风格更接近一些。numix库如下：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;add-apt-repository ppa:numix/ppa
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt-get update
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;adapta主题可以用下载&lt;a href=&quot;https://launchpad.net/~tista/+archive/ubuntu/adapta/+builds?build_state=built&quot;&gt;安装包&lt;/a&gt;的方式安装。&lt;/p&gt;
+
+&lt;h2 id=&quot;5-atom-editor&quot;&gt;5. Atom Editor&lt;/h2&gt;
+&lt;p&gt;Atom Editor可以在安装完成后使用如下命令安装所有插件，&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;apm stars &lt;span class=&quot;nt&quot;&gt;--install&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;在安装了新插件的时候还可以利用如下命令上传插件列表，&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;apm star &lt;span class=&quot;nt&quot;&gt;--installed&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;apm&lt;/code&gt;是atom package manager的缩写。注意&lt;code class=&quot;highlighter-rouge&quot;&gt;star&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;stars&lt;/code&gt;的区别。&lt;/p&gt;
+
+&lt;h2 id=&quot;6-其他&quot;&gt;6. 其他&lt;/h2&gt;
+&lt;p&gt;能想到的主要的设置项目就是这些，其他还安装了的应用包括tmux，tagspaces，typora，fcitx rime(中州韵)，xclip，shadowsocks等等。&lt;code class=&quot;highlighter-rouge&quot;&gt;.bashrc&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;.tmux.conf&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;snippets.cson&lt;/code&gt;都有备份，记得拷贝到相应位置即可。ssh密钥也都要注意备份和恢复。StackEdit是可以替代typora的在线markdown编辑器，非常好用，这样就不用经常打开crouton只为写点东西了。&lt;strong&gt;crosh terminal会吃掉vim的ctrl-w快捷键&lt;/strong&gt;，可能还有其他的，&lt;del&gt;tmux mouse mode + vim应该是更便捷的选择。&lt;/del&gt;tmux mouse mode会阻止crosh预设的鼠标复制文字的功能。但是vim本身也可以支持鼠标选择。
+尝试了gnome 3，感觉还是不如xfce轻，用起来也不习惯。keyboard target可以把功能键利用起来，一定要装。大概就想到了这么多，其他的以后想起来或者遇上了再慢慢添吧。&lt;/p&gt;</content><author><name>Yitong Sun</name></author><category term="crouton" /><category term="chromebook" /><category term="linux" /><summary type="html">入手HP Chromebook 13 g1大半年，一开始就安装了Gallium OS。但Gallium OS迟迟无法解决intel skylake model上的音频输出问题，加上Gallium OS的电源管理比Chrome OS要弱不少，不接电源的情况下无法长时间的使用。忍了大半年后，终于回到了Crouton的方案。当初离开Crouton主要是遇上了休眠崩溃的bug，如今已经修复，所以可以放心使用。更主要的是，谷歌已经开始在自家的旗舰Pixelbook上支持Linux，更有Android的加持，让我对回到原生Chrome OS抱有更多的期待。</summary></entry><entry><title type="html">如何阻止ssh重命名tmux窗口</title><link href="https://blog.syitong.me/articles/tmux-rename/" rel="alternate" type="text/html" title="如何阻止ssh重命名tmux窗口" /><published>2018-08-28T00:00:00-04:00</published><updated>2018-08-28T00:00:00-04:00</updated><id>https://blog.syitong.me/articles/tmux-rename</id><content type="html" xml:base="https://blog.syitong.me/articles/tmux-rename/">&lt;p&gt;在使用tmux多窗口终端时，每次登录学校的服务器后，窗口的标签就会被改成与服务器的prompt相同。而且登出后也不会改回来，导致tmux经常几个窗口的名字都很长，也没有反映窗口当时的状况。之所以会这样，是因为tmux默认允许一些进程修改窗口名，而ssh对终端窗口的命名规则是由服务器上的配置文件决定的。&lt;/p&gt;
+
+&lt;p&gt;解决该问题的基本想法有三种：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;在服务器端修改ssh对窗口的命名规则。但是这种办法显然无法应对多台服务器的情况。&lt;/li&gt;
+  &lt;li&gt;在tmux的设置中完全禁用重命名。但是这样一来需要手动重命名的时候也无法实现。&lt;/li&gt;
+  &lt;li&gt;重载ssh命令，加入需要的功能。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;我采用的是第三种方案。顺便借此机会熟悉了一下bash的编程语法。以下代码是对chimay在&lt;a href=&quot;https://superuser.com/questions/249293/rename-tmux-window-name-to-prompt-command-ps1-or-remote-ssh-hostname&quot;&gt;superuser&lt;/a&gt;中提供的答案的改写。&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ssh&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;local &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;code&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;0
+    &lt;span class=&quot;nb&quot;&gt;local &lt;/span&gt;ancien
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$TERM&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; screen &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$TERM&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; screen-256color &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then
+        &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;ancien&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;$(&lt;/span&gt;tmux display-message &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'#W'&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;command &lt;/span&gt;ssh &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$@&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+        &lt;span class=&quot;nv&quot;&gt;code&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$?&lt;/span&gt;
+        tmux rename-window &lt;span class=&quot;nv&quot;&gt;$ancien&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;else
+        &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;command &lt;/span&gt;ssh &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$@&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+        &lt;span class=&quot;nv&quot;&gt;code&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$?&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;fi
+    return&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$code&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;其中变量&lt;code class=&quot;highlighter-rouge&quot;&gt;code=$?&lt;/code&gt;用于返回ssh可能收到的状态返回值，比如需要报错的情况。&lt;code class=&quot;highlighter-rouge&quot;&gt;ancien&lt;/code&gt;用于记录登录ssh之前窗口的名称。 &lt;code class=&quot;highlighter-rouge&quot;&gt;command&lt;/code&gt;&lt;mark&gt;用于表示执行系统原本的ssh命令，避免调用定义本身导致无限循环！&lt;/mark&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;&quot;$@&quot;&lt;/code&gt;表示将所有参数作为整体传入ssh命令。和原作者提供的版本相比，我将tmux相关的命令都放在&lt;code class=&quot;highlighter-rouge&quot;&gt;if then&lt;/code&gt;的包裹中，避免在非tmux环境下的错误。这样一来，每次在登出服务器之后，tmux都会把窗口改回登录前的名字。&lt;/p&gt;</content><author><name>Yitong Sun</name></author><category term="linux" /><category term="bash programming" /><summary type="html">在使用tmux多窗口终端时，每次登录学校的服务器后，窗口的标签就会被改成与服务器的prompt相同。而且登出后也不会改回来，导致tmux经常几个窗口的名字都很长，也没有反映窗口当时的状况。之所以会这样，是因为tmux默认允许一些进程修改窗口名，而ssh对终端窗口的命名规则是由服务器上的配置文件决定的。</summary></entry><entry><title type="html">Asymptotic Expansion of Bessel Functions For Large Argument</title><link href="https://blog.syitong.me/notes/asymtotic-bessel/" rel="alternate" type="text/html" title="Asymptotic Expansion of Bessel Functions For Large Argument" /><published>2018-07-23T00:00:00-04:00</published><updated>2018-07-23T00:00:00-04:00</updated><id>https://blog.syitong.me/notes/asymtotic-bessel</id><content type="html" xml:base="https://blog.syitong.me/notes/asymtotic-bessel/">&lt;p&gt;This note is based on Appendix B.7 and B.8 of &lt;a class=&quot;citation&quot; href=&quot;#Grafakos2008&quot;&gt;(Grafakos, 2008)&lt;/a&gt;. First, we show that Bessel function can be written into the following form&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+J_v(r) = \frac{(r/2)^v}{\Gamma(v+\frac12)\Gamma(\frac12)}\left[ie^{-ir}
+\int_0^\infty e^{-rt}(t^2+2it)^{v-\frac12}dt \\
+-ie^{ir}\int_0^\infty e^{-rt}(t^2-2it)^{v-\frac12}dt\right]\,,\tag{*}
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;for &lt;script type=&quot;math/tex&quot;&gt;r&gt;0&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;Re(v)&gt;-1/2&lt;/script&gt;. This is done by considering the line integral of &lt;script type=&quot;math/tex&quot;&gt;e^{irz}(1-z^2)^{v-1/2}&lt;/script&gt; over the curves shown in the illustration &lt;mark&gt; (arrows should be flipped!) &lt;/mark&gt;. &lt;img src=&quot;/assets/images/2018-07-23-fig1.png&quot; alt=&quot;fig1&quot; width=&quot;400px&quot; class=&quot;align-center&quot; /&gt; First, the function is analytic in the region bounded by the curves. To see that, note that the complement region of the non-positive real line is a holomorphic branch of &lt;script type=&quot;math/tex&quot;&gt;\ln(z)&lt;/script&gt;. For &lt;script type=&quot;math/tex&quot;&gt;\ln(1+z)&lt;/script&gt; this region is the complement of &lt;script type=&quot;math/tex&quot;&gt;(-\infty,-1)&lt;/script&gt;. And to guarantee &lt;script type=&quot;math/tex&quot;&gt;-z^2&lt;/script&gt; stays in this region, we allow &lt;script type=&quot;math/tex&quot;&gt;z&lt;/script&gt; in the upper half plane together with the interval &lt;script type=&quot;math/tex&quot;&gt;[-1+\delta,1-\delta]&lt;/script&gt;. Then by rewriting&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+(1-z^2)^{v-1/2} = \exp((v-1/2)\ln(1-z^2))\,,
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;we are done.&lt;/p&gt;
+
+&lt;p&gt;Then by Cauchy’s theorem, we know the line integral of such a function will be &lt;script type=&quot;math/tex&quot;&gt;0&lt;/script&gt;. Denote that&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+I_1 &amp; = \int_{C_3 + C_5}e^{irz}(1-z^2)^{v-1/2}dz\\
+&amp; = ie^{-ir}\int_R^\delta e^{-rt}(t^2+2it)^{v-\frac12}dt
++ ie^{ir}\int_\delta^R e^{-rt}(t^2-2it)^{v-\frac12}dt\\
+I_2 &amp; = \int_{C_1} e^{irz}(1-z^2)^{v-1/2}dz \\
+&amp; = \int_{-1+\delta}^{1-\delta} e^{irt}(1-t^2)^{v-\frac12}dt\\
+I_3 &amp; = \int_{C_6+C_2} e^{irz}(1-z^2)^{v-1/2}dz \\
+&amp; = \int_{\pi/2}^0 i\delta e^{i\delta\theta}
+e^{ir(-1+e^{i\delta\theta})}(2e^{i\delta\theta}+e^{2i\delta\theta})
+^{v-1/2}d\theta \\
+&amp; + \int_{0}^{\pi/2} i\delta e^{i\delta\theta}
+e^{ir(1-e^{i\delta\theta})}(2e^{i\delta\theta}+e^{2i\delta\theta})
+^{v-1/2}d\theta \\
+I_4 &amp; = \int_{C_4} e^{irz}(1-z^2)^{v-1/2}dz \\
+&amp; = \int_{1}^{-1} e^{ir(t+iR)}(1-t^2+R^2-2iRt)^{v-1/2}dt\,.
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Clearly, when &lt;script type=&quot;math/tex&quot;&gt;\delta\to 0,R\to\infty&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;-I_1&lt;/script&gt; gives the right hand side of (*), and &lt;script type=&quot;math/tex&quot;&gt;I_2&lt;/script&gt; gives us the original definition of &lt;script type=&quot;math/tex&quot;&gt;J_v(r)&lt;/script&gt;. For &lt;script type=&quot;math/tex&quot;&gt;I_3&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;I_4&lt;/script&gt;, we only need to recall that&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+\vert(\vert z\vert e^{i\theta})^{a+bi}\vert = \vert z\vert^a e^{-\theta b}\,.
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;Then we get that &lt;script type=&quot;math/tex&quot;&gt;\vert I_3\vert = O(\delta)&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;\vert I_4\vert = O(e^{-rR}R^{2Re(v)-1})&lt;/script&gt;. So both &lt;script type=&quot;math/tex&quot;&gt;I_3&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;I_4&lt;/script&gt; goes to &lt;script type=&quot;math/tex&quot;&gt;0&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;Using this formula, we can show that&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+J_v(r) = \sqrt{\frac{2}{\pi r}}\cos\left(r-\frac{\pi v}{2}
+-\frac{\pi}{4}\right) + R_v(r)\,,
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;where &lt;script type=&quot;math/tex&quot;&gt;\vert R_v(r)\vert \le C_vr^{-3/2}&lt;/script&gt;. From this asymptotics, we can see that for &lt;script type=&quot;math/tex&quot;&gt;r\gg v&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;J_v(r)&lt;/script&gt; is close to the decaying &lt;script type=&quot;math/tex&quot;&gt;\cos&lt;/script&gt;.&lt;/p&gt;</content><author><name>Yitong Sun</name></author><category term="asymptotic analysis" /><summary type="html">This note is based on Appendix B.7 and B.8 of (Grafakos, 2008). First, we show that Bessel function can be written into the following form</summary></entry><entry><title type="html">Product Form of Euler’s Limit Formula for the Gamma Function</title><link href="https://blog.syitong.me/notes/prod-euler-gamma/" rel="alternate" type="text/html" title="Product Form of Euler's Limit Formula for the Gamma Function" /><published>2018-07-23T00:00:00-04:00</published><updated>2018-07-23T00:00:00-04:00</updated><id>https://blog.syitong.me/notes/prod-euler-gamma</id><content type="html" xml:base="https://blog.syitong.me/notes/prod-euler-gamma/">&lt;p&gt;This note is a continuation of &lt;a href=&quot;/notes/euler-gamma-fn/&quot;&gt;last one&lt;/a&gt;. By the definition of &lt;script type=&quot;math/tex&quot;&gt;\Gamma_n(z)&lt;/script&gt;, for &lt;script type=&quot;math/tex&quot;&gt;Re(z)&gt;0&lt;/script&gt;, we can rewrite it in the following form,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+\Gamma_n(z) &amp; = \int_0^n\left(1-\frac{t}{n}\right)^n t^{z-1}dt \\
+&amp; = \frac{n!n^z}{z\cdots(z+n)} \\
+1 &amp; = \Gamma_n(z)z\exp(z\gamma_n)\prod_{k=1}^n\left(1+\frac{z}{k}\right)e^{-z/k}\,,
+\tag{*}
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;where &lt;script type=&quot;math/tex&quot;&gt;\gamma_n = \sum_{k=1}^n 1/k - \ln n&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;\lim_{n\to\infty}\gamma_n&lt;/script&gt; is the Euler’s constant. So by sending &lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt; to infinity, we get&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+1 = \Gamma(z)z\exp(z\gamma)\prod_{k=1}^\infty\left(1+\frac{z}{k}\right)e^{-z/k}\,.
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;Assume that &lt;script type=&quot;math/tex&quot;&gt;% &lt;![CDATA[
+\vert z\vert &lt; N %]]&gt;&lt;/script&gt;. Then the infinite product&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+\prod_{k=N}^\infty\left(1+\frac{z}{k}\right)e^{-z/k}
+ = \exp\left(\sum_{k=N}^\infty -z/k+\ln(1+z/k)\right)\,.
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;And for any &lt;script type=&quot;math/tex&quot;&gt;k\ge N+1&lt;/script&gt;,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+\left\vert -\frac{z}{k}+\ln(1+\frac{z}{k})\right\vert
+&amp; = \left\vert\sum_{i=2}^\infty \frac{1}{i}\left(-\frac{z}{k}\right)^i\right\vert \\
+&amp; \le \frac{\vert z\vert^2}{k^2}\sum_{i=2}^\infty\frac{1}{i}\frac{\vert z\vert^i}{k^i} \\
+&amp; \le \frac{c_N\vert z\vert^2}{k^2}\,.
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Therefore the infinite product from &lt;script type=&quot;math/tex&quot;&gt;N&lt;/script&gt; to &lt;script type=&quot;math/tex&quot;&gt;\infty&lt;/script&gt; converges uniformly for all &lt;script type=&quot;math/tex&quot;&gt;% &lt;![CDATA[
+\vert z\vert&lt;N %]]&gt;&lt;/script&gt;. And the limit must be also analytic. The product of first &lt;script type=&quot;math/tex&quot;&gt;N-1&lt;/script&gt; terms is also analytic. So we prove that the infinite product defines an analytic function over the whole complex plane. It has roots at negative integers.&lt;/p&gt;
+
+&lt;p&gt;However, the equality (*) only holds for &lt;script type=&quot;math/tex&quot;&gt;Re(z)&gt;0&lt;/script&gt; since we start from the definition of &lt;script type=&quot;math/tex&quot;&gt;\Gamma_n&lt;/script&gt;. But we know that &lt;script type=&quot;math/tex&quot;&gt;\Gamma(z)&lt;/script&gt; has simple poles at non-positive integers and is analytic elsewhere &lt;mark&gt; (this can be seen from the analytic continuation from the half plane $$ Re(z)&amp;gt;0 $$ and the iteration relation $$ \Gamma(z)=\Gamma(z+1)/z $$) &lt;/mark&gt;. So by analytic continuation we know that (*) holds for the whole complex plane. And we also get the fact that &lt;script type=&quot;math/tex&quot;&gt;\Gamma(z)\ne 0&lt;/script&gt; and that &lt;script type=&quot;math/tex&quot;&gt;\Gamma^{-1}(z)&lt;/script&gt; is entire.&lt;/p&gt;
+
+&lt;p&gt;An immediate consequence of the product form of Euler’s limit formula is the identity&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+\frac{1}{\vert\Gamma(x+iy)\vert^2}=\frac{1}{\vert\Gamma(x)\vert^2}
+\prod_{k=0}^\infty\left(1+\frac{y^2}{(k+x)^2}\right)\,,
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;and further&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+\frac{1}{\vert\Gamma(x+iy)\vert^2} &amp; \le \frac{1}{\vert\Gamma(x)\vert^2}
+\prod_{k=0}^\infty\exp\left(\frac{y^2}{(k+x)^2}\right) \\
+&amp; = \frac{1}{\vert\Gamma(x)\vert^2}
+\exp\left(y^2\sum_{k=0}^\infty\frac{1}{(k+x)^2}\right) \\
+&amp; \le \frac{1}{\vert\Gamma(x)\vert^2}
+\exp\left(y^2\left(\frac{1}{x^2}+\int_0^\infty\frac{1}{(k+x)^2}dk\right)\right) \\
+&amp; = \frac{1}{\vert\Gamma(x)\vert^2}
+\exp\left(y^2\left(\frac{1}{x^2}+\frac{1}{x}\right)\right) \\
+&amp; \le \frac{1}{\vert\Gamma(x)\vert^2}
+\exp\left(y^2\max\left(\frac{2}{x^2},\frac{2}{x}\right)\right)\,.
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;The inequality will be used in asymptotic expansion of Bessel functions.&lt;/p&gt;
+
+&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
+&lt;ol class=&quot;bibliography&quot;&gt;&lt;/ol&gt;</content><author><name>Yitong Sun</name></author><category term="asymptotic analysis" /><summary type="html">This note is a continuation of last one. By the definition of , for , we can rewrite it in the following form,</summary></entry><entry><title type="html">Euler’s Limit Formula for the Gamma Function</title><link href="https://blog.syitong.me/notes/euler-gamma-fn/" rel="alternate" type="text/html" title="Euler's Limit Formula for the Gamma Function" /><published>2018-07-22T00:00:00-04:00</published><updated>2018-07-22T00:00:00-04:00</updated><id>https://blog.syitong.me/notes/euler-gamma-fn</id><content type="html" xml:base="https://blog.syitong.me/notes/euler-gamma-fn/">&lt;p&gt;This note is based on the Appendix A.7 of &lt;a class=&quot;citation&quot; href=&quot;#Grafakos2008&quot;&gt;(Grafakos, 2008)&lt;/a&gt;. The gamma function &lt;script type=&quot;math/tex&quot;&gt;\Gamma(x)&lt;/script&gt; is defined by the integral &lt;script type=&quot;math/tex&quot;&gt;\int_0^\infty t^{x-1}e^{-t}&lt;/script&gt;. For integer &lt;script type=&quot;math/tex&quot;&gt;x&lt;/script&gt; this defines the factorial up to &lt;script type=&quot;math/tex&quot;&gt;x-1&lt;/script&gt;. In general this definition holds for all complex numbers except for non-positive integers, where it has simple poles. This can be seen from the Taylor expansion of &lt;script type=&quot;math/tex&quot;&gt;e^{-t}&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;Euler’s limit formula for the gamma function considers the following functions&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+\Gamma_n(z) = \int_0^n \left(1-\frac{t}{n}\right)^nt^{z-1}dt
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;for integer &lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt;s and &lt;script type=&quot;math/tex&quot;&gt;Re(z)&gt;0&lt;/script&gt;. Because only for &lt;script type=&quot;math/tex&quot;&gt;Re(z)&gt;0&lt;/script&gt;, the improper integral is well defined. Obviously the integrand replace &lt;script type=&quot;math/tex&quot;&gt;e^{-t}&lt;/script&gt; by its well known approximation. And Euler’s theorem says that &lt;script type=&quot;math/tex&quot;&gt;\lim_{n\to\infty}\Gamma_n(z)=\Gamma(z)&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;The proof considers the difference of two definitions and split the integration interval into 3 parts.&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+\Gamma(z)-\Gamma_n(z) = I_1(z) + I_2(z) + I_3(z)
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;where&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+I_1(z) = \int_n^\infty t^{x-1}e^{-t}dt \\
+I_2(z) = \int_{n/2}^n \left(e^{-t}-\left(1-\frac{t}{n}\right)^n\right)t^{x-1}dt \\
+I_3(z) = \int_0^{n/2} \left(e^{-t}-\left(1-\frac{t}{n}\right)^n\right)t^{x-1}dt\,.
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;&lt;script type=&quot;math/tex&quot;&gt;I_1&lt;/script&gt; goes to &lt;script type=&quot;math/tex&quot;&gt;0&lt;/script&gt; for any &lt;script type=&quot;math/tex&quot;&gt;z&lt;/script&gt; when &lt;script type=&quot;math/tex&quot;&gt;n\to\infty&lt;/script&gt;. To study the difference in &lt;script type=&quot;math/tex&quot;&gt;I_2&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;I_3&lt;/script&gt;, we rewrite&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+\left(1-\frac{t}{n}\right)^n = \exp(n\ln(1-t/n))
+= \exp\left(-n\sum_{k=1}^\infty \frac{1}{k}\left(\frac{t}{n}\right)^k\right)\,.
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;Then&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+e^{-t}-\left(1-\frac{t}{n}\right)^n
+&amp; = e^{-t}\left(1-\exp\left(-\sum_{k=2}^\infty\frac{t^k}{kn^{k-1}}\right)\right) \\
+&amp; \le e^{-t}\,.
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;By dominant convergence theorem we know &lt;script type=&quot;math/tex&quot;&gt;I_2&lt;/script&gt; also goes to &lt;script type=&quot;math/tex&quot;&gt;0&lt;/script&gt;. For &lt;script type=&quot;math/tex&quot;&gt;I_3&lt;/script&gt;, we know that&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+\sum_{k=2}^\infty \frac{t^k}{kn^{k-1}}
+\le \frac{t^2}{n}\sum_{k=2}^\infty\frac{(1/2)^{k-1}}{k}
+= c\left(\frac{t^2}{n}\right)\,.
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;So&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+e^{-t}-\left(1-\frac{t}{n}\right)^n &amp; \le e^{-t}(1-\exp(-ct^2/n)) \\
+&amp; \le \frac{ct^2}{n}e^{-t} \\
+&amp; \to 0\,,
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;as &lt;script type=&quot;math/tex&quot;&gt;n\to\infty&lt;/script&gt;. Again by dominant convergence theorem, we have &lt;script type=&quot;math/tex&quot;&gt;I_3&lt;/script&gt; goes to &lt;script type=&quot;math/tex&quot;&gt;0&lt;/script&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
+
+&lt;ol class=&quot;bibliography&quot;&gt;&lt;li&gt;&lt;span id=&quot;Grafakos2008&quot;&gt;Grafakos, L. (2008). &lt;i&gt;Classical Fourier Analysis&lt;/i&gt;. Springer New York.&lt;/span&gt;&lt;/li&gt;&lt;/ol&gt;</content><author><name>Yitong Sun</name></author><category term="asymptotic analysis" /><summary type="html">This note is based on the Appendix A.7 of (Grafakos, 2008). The gamma function is defined by the integral . For integer this defines the factorial up to . In general this definition holds for all complex numbers except for non-positive integers, where it has simple poles. This can be seen from the Taylor expansion of .</summary></entry><entry><title type="html">利用Jekyll搭建博客</title><link href="https://blog.syitong.me/articles/jekyll/" rel="alternate" type="text/html" title="利用Jekyll搭建博客" /><published>2018-07-13T00:00:00-04:00</published><updated>2018-07-13T00:00:00-04:00</updated><id>https://blog.syitong.me/articles/jekyll</id><content type="html" xml:base="https://blog.syitong.me/articles/jekyll/">&lt;p&gt;搭建个人博客主要有三种途径。一种是利用现成的博客网站，如Google的Blogger服务，新浪博客等。另一种则是利用软件生成博客网页， 再上传到自己的服务上。这一类博客生成软件有不少，比如应用最广泛的WordPress，和功能稍弱，但更为简洁的&lt;a href=&quot;https://jekyllrb.com/&quot;&gt;Jekyll&lt;/a&gt;和Pelican。&lt;/p&gt;
+
+&lt;h2 id=&quot;jekyll的安装与配置&quot;&gt;Jekyll的安装与配置&lt;/h2&gt;
+
+&lt;p&gt;Jekyll是通过Ruby实现的一个工具包。在已经安装Ruby的情况下，安装Jekyll十分简单。和官方教程中略有不同的地方是，为了保持一个干净的根系统，安装时最好使用&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;gem &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--user-install&lt;/span&gt; jekyll bundler
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;这样Jekyll会被安装在用户&lt;code class=&quot;highlighter-rouge&quot;&gt;home&lt;/code&gt;文件夹下的&lt;code class=&quot;highlighter-rouge&quot;&gt;.gem&lt;/code&gt;目录。博客根目录中的&lt;code class=&quot;highlighter-rouge&quot;&gt;Gemfile&lt;/code&gt;定义了你的博客中所需要的插件：&lt;/p&gt;
+
+&lt;div class=&quot;language-ruby highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;gem&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;jekyll&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;~&amp;gt;3.5&quot;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# This is the default theme for new Jekyll sites. You may change this to anything you like.&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;gem&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;minimal-mistakes-jekyll&quot;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;gem&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;jekyll-archives&quot;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;gem&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;jekyll-scholar&quot;&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# If you want to use GitHub Pages, remove the &quot;gem &quot;jekyll&quot;&quot; above and&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# uncomment the line below. To upgrade, run `bundle update github-pages`.&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# gem &quot;github-pages&quot;, group: :jekyll_plugins&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# If you have any plugins, put them here!&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;group&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:jekyll_plugins&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+   &lt;span class=&quot;n&quot;&gt;gem&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;jekyll-feed&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;~&amp;gt; 0.6&quot;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;这里minimal-mistakes-jekyll为博客主题；jekyll-archives提供了按照年份，类别和标签对文章进行分类的功能；jekyll-scholar提供了为文章插入bibtex文献的功能。执行&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ bundle install
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;主题和插件就会被安装，注意在安装前要注意系统是否具备所需的包，特别是要安装&lt;code class=&quot;highlighter-rouge&quot;&gt;libxslt1.1&lt;/code&gt;，否则会安装到&lt;code class=&quot;highlighter-rouge&quot;&gt;nokogiri&lt;/code&gt;的时候会报错。&lt;code class=&quot;highlighter-rouge&quot;&gt;_config.yml&lt;/code&gt;文件中还可以启用Jekyll自带的一些插件。&lt;/p&gt;
+
+&lt;p&gt;Jekyll使用kramdown语法，支持&lt;script type=&quot;math/tex&quot;&gt;\LaTeX&lt;/script&gt;公式。&lt;code class=&quot;highlighter-rouge&quot;&gt;_include/head.html&lt;/code&gt;中加入下面的内容可以将&lt;script type=&quot;math/tex&quot;&gt;\LaTeX&lt;/script&gt;公式转换为&lt;code class=&quot;highlighter-rouge&quot;&gt;.png&lt;/code&gt;文件显示在网页中。&lt;/p&gt;
+
+&lt;div class=&quot;language-liquid highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;!-- Mathjax support --&amp;gt;
+&lt;span class=&quot;p&quot;&gt;{%&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;page&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;mathjax&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;%}&lt;/span&gt;
+&amp;lt;script type=&quot;text/javascript&quot; async
+  src=&quot;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML&quot;&amp;gt;
+&amp;lt;/script&amp;gt;
+&lt;span class=&quot;p&quot;&gt;{%&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;endif&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;%}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;kramdown中的&lt;script type=&quot;math/tex&quot;&gt;\LaTeX&lt;/script&gt;数学环境与通常的latex语法略有不同。其行内与行间公式均由&lt;code class=&quot;highlighter-rouge&quot;&gt;$$&lt;/code&gt;包裹，行间公式还需要在&lt;code class=&quot;highlighter-rouge&quot;&gt;$$&lt;/code&gt;外面添加空行。Mathjax在网页上加载略慢，但是支持的&lt;script type=&quot;math/tex&quot;&gt;\LaTeX&lt;/script&gt;环境非常多。上面代码中的&lt;/p&gt;
+
+&lt;div class=&quot;language-liquid highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{%&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;page&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;mathjax&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;%}&lt;/span&gt;
+...
+&lt;span class=&quot;p&quot;&gt;{%&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;endif&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;%}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;是Jekyll生成网页时采用的语法，一些简单的语句可以实现一些对不同页面的个性化控制，比如&lt;/p&gt;
+
+&lt;div class=&quot;language-liquid highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{%&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;page&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;layout&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;==&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'home'&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;%}&lt;/span&gt;
+...
+&lt;span class=&quot;p&quot;&gt;{%&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;endif&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;%}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;就可以把代码添加到博客的homepage.&lt;/p&gt;
+
+&lt;p&gt;通过执行&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;bundle &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;jekyll build &lt;span class=&quot;nt&quot;&gt;--incremental&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;命令可以在本地生成静态博客，默认是在&lt;code class=&quot;highlighter-rouge&quot;&gt;_site&lt;/code&gt;目录下。注意&lt;code class=&quot;highlighter-rouge&quot;&gt;bundle exec&lt;/code&gt;的部分是保证再生成过程中各种插件的调用的。&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;bundle &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;jekyll serve &lt;span class=&quot;nt&quot;&gt;--incremental&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;可以生成预览文件，在本地&lt;code class=&quot;highlighter-rouge&quot;&gt;localhost:4000&lt;/code&gt;端口预览。注意：预览生成的网页链接都是指向localhost的，在上传服务器还是要执行一次build命令。&lt;/p&gt;
+
+&lt;h2 id=&quot;服务器的搭建&quot;&gt;服务器的搭建&lt;/h2&gt;
+
+&lt;p&gt;Github或者个人服务器都可以作为博客的伺服点。只需要把&lt;code class=&quot;highlighter-rouge&quot;&gt;./_site&lt;/code&gt;文件夹下的文件上传到服务器端即可。服务器端可以使用apache2伺服。安装了apache2后，使用&lt;code class=&quot;highlighter-rouge&quot;&gt;ufw enable&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;ufw allow&lt;/code&gt;来配置防火墙。将在本地生成的博客文件上传至在&lt;code class=&quot;highlighter-rouge&quot;&gt;/var/www/your-domain-name&lt;/code&gt;文件夹中，再利用Apache2的virtual hosts功能实现域名访问。具体可以参见&lt;a href=&quot;https://www.digitalocean.com/community/tutorials/how-to-set-up-apache-virtual-hosts-on-ubuntu-16-04&quot;&gt;How To Set Up Apache Virtual Hosts&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;推荐使用&lt;a href=&quot;https://certbot.eff.org/&quot;&gt;Let’s Encrypt&lt;/a&gt;服务加密网页，也就是使用https. 使用前要确保域名已经指向正确的ip，并设置好了virtual hosts. &lt;code class=&quot;highlighter-rouge&quot;&gt;certbot --apache&lt;/code&gt;命令会根据&lt;code class=&quot;highlighter-rouge&quot;&gt;/etc/apache2/site-available/&lt;/code&gt;中的配置文件生成对应的443端口使用的配置文件，其中包括了生成的证书信息。注意：使用https加密要求网页中的所有链接都使用了https，在Jekyll的配置文件中&lt;code class=&quot;highlighter-rouge&quot;&gt;_config.yml&lt;/code&gt;中url要修改成正确的网址才能保证css style文件的正确加载。&lt;/p&gt;
+
+&lt;p&gt;其他一些与服务器管理相关的建议：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;使用ssh密钥实现免密登录服务器&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ssh-keygen
+ssh-copy-id user@host
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;使用被加入了sudo组的用户来管理服务器，避免使用root权限登录服务器&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;adduser user &lt;span class=&quot;nb&quot;&gt;sudo&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;缺陷&quot;&gt;缺陷&lt;/h2&gt;
+
+&lt;p&gt;目前这种博客搭建方式最大的问题是缺少支持kramdown语法的所见即所得编辑器。虽然markdown的本意是使用文本进行格式编辑，但是考虑到大量的数学公式，所见即所得的编辑器还是可以节省不少时间的。typora是目前对kramdown语法支持最好的编辑器，但是其默认的数学环境仍然不同于kramdown，行间公式没有前后空行。作为妥协，可以使用atom进行文本编辑，把typora当作一个预览软件。&lt;/p&gt;</content><author><name>Yitong Sun</name></author><category term="internet" /><category term="Jekyll" /><summary type="html">搭建个人博客主要有三种途径。一种是利用现成的博客网站，如Google的Blogger服务，新浪博客等。另一种则是利用软件生成博客网页， 再上传到自己的服务上。这一类博客生成软件有不少，比如应用最广泛的WordPress，和功能稍弱，但更为简洁的Jekyll和Pelican。</summary></entry><entry><title type="html">Holder’s and Young’s Inequalities</title><link href="https://blog.syitong.me/notes/young/" rel="alternate" type="text/html" title="Holder's and Young's Inequalities" /><published>2018-07-07T00:00:00-04:00</published><updated>2018-07-07T00:00:00-04:00</updated><id>https://blog.syitong.me/notes/young</id><content type="html" xml:base="https://blog.syitong.me/notes/young/">&lt;h2 id=&quot;classical-case&quot;&gt;Classical Case&lt;/h2&gt;
+&lt;p&gt;A quick proof of general Holder’s inequality is as follows. First, by Jensen’s inequality, we have for positive &lt;script type=&quot;math/tex&quot;&gt;\{a_i\}_{i=1}^n&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;\{p_i\}_{i=1}^n&lt;/script&gt; satisfying &lt;script type=&quot;math/tex&quot;&gt;\sum 1/p_i = 1&lt;/script&gt;,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+\prod a_i^{1/p_i} &amp; = \exp\left(\sum\frac{\ln(a_i)}{p_i}\right) \\
+&amp; \le \sum \frac{\exp(\ln(a_i))}{p_i} \\
+&amp; = \sum\frac{a_i}{p_i}\,.
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Then for functions &lt;script type=&quot;math/tex&quot;&gt;\{ f_i \}_1^n&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;L^{p_i}&lt;/script&gt;-integrable, we can set &lt;script type=&quot;math/tex&quot;&gt;\vert f_i\vert^{p_i}/\Vert f_i\Vert_{p_i}^{p_i}&lt;/script&gt; to be &lt;script type=&quot;math/tex&quot;&gt;a_i&lt;/script&gt; and apply the inequality above.&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+\prod\frac{\vert f_i\vert}{\Vert f_i\Vert_{p_i}} \le
+\sum\frac{\vert f_i\vert^{p_i}}{p_i\Vert f_i\Vert_{p_i}^{p_i}}\,.
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;Integrate both sides, the general Holder’s inequality gets proved.&lt;/p&gt;
+
+&lt;p&gt;Now we prove Young’s convolution inequality (see &lt;a href=&quot;https://en.wikipedia.org/wiki/Young%27s_convolution_inequality&quot;&gt;wikipedia&lt;/a&gt;). For &lt;script type=&quot;math/tex&quot;&gt;1/p+1/q+1/r=2&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;f\in L^p,g\in L^q,h\in L^r&lt;/script&gt;, we have&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+\iint f(x)g(x-y)h(y)dxdy \le \Vert f\Vert_p\Vert g\Vert_q\Vert h\Vert_r\,.
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;Note that &lt;script type=&quot;math/tex&quot;&gt;(1-1/p)+(1-1/q)+(1-1/r)=1&lt;/script&gt;, we can apply Holder’s inequality. Set&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+F(x,y) = [f^p(x)g^q(x-y)]^{1-1/r} \\
+G(x,y) = [g^q(x-y)h^r(y)]^{1-1/p} \\
+H(x,y) = [h^r(x)f^p(x)]^{1-1/q}\,.
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;Then&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+&amp; \iint f(x)g(x-y)h(y)dxdy \\
+&amp; = \iint F(x,y)G(x,y)H(x,y)dxdy \\
+&amp; \le \Vert F\Vert_{1-1/r}\Vert G\Vert_{1-1/p}
+\Vert H\Vert_{1-1/q} \\
+&amp; \le \left(\iint \vert f\vert^p \vert g\vert^q\right)^{1-1/r}
+\left(\iint \vert g\vert^q \vert h\vert^r\right)^{1-1/p}
+\left(\iint \vert h\vert^r \vert f\vert^p\right)^{1-1/q} \\
+&amp; = \Vert f\Vert_p\Vert g\Vert_q\Vert h\Vert_r\,.
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Another form of Young’s inequality is as follows,&lt;/p&gt;
+
+&lt;p&gt;&lt;script type=&quot;math/tex&quot;&gt;\begin{equation}
+\Vert f\ast g\Vert_s \le \Vert f\Vert_p \Vert g\Vert_q\,,
+\end{equation}&lt;/script&gt;
+for &lt;script type=&quot;math/tex&quot;&gt;1/p+1/q=1+1/s&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;f,g&lt;/script&gt; in appropriate spaces. This can be prove by setting &lt;script type=&quot;math/tex&quot;&gt;1/s = 1-1/r&lt;/script&gt; and&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+h(x) = [f\ast g(x)]^{s-1}\,,
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;and applying the inequality above. Indeed,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+\Vert f\ast g \Vert_s^s
+&amp; = \int \left(\int f(y)g(y-x) dy\right)^s dx \\
+&amp; = \int \int f(y)g(y-x) dy~h(x)dx \\
+&amp; \le \Vert f\Vert_p\Vert g\Vert_q \Vert h\Vert_r\,.
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Note that&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+\Vert h\Vert_r
+&amp; = \left(\int \vert f\ast g(x)\vert^{r/(r-1)}dx\right)^{1/r}\\
+&amp; = \left(\int \vert f\ast g(x)\vert^{s}dx\right)^{1-1/s}\\
+&amp; = \Vert f\ast g\Vert_s^{s-1}\,.
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;The proof is complete.&lt;/p&gt;
+
+&lt;p&gt;Note that the derivation above can be simplified using the dual space argument. For &lt;script type=&quot;math/tex&quot;&gt;s&lt;/script&gt; satisfying &lt;script type=&quot;math/tex&quot;&gt;1/s+1/r=1&lt;/script&gt;,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+\Vert f\ast g\Vert_s
+&amp; = \sup_{\Vert h\Vert_r\le 1} \int (f\ast g)(x)h(x) dx \\
+&amp; \le \sup_{\Vert h\Vert_r\le 1} \Vert f\Vert_p\Vert g\Vert_q
+\Vert h\Vert_r \\
+&amp; =  \Vert f\Vert_p\Vert g\Vert_q\,.
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;h2 id=&quot;vector-case&quot;&gt;Vector Case&lt;/h2&gt;
+&lt;p&gt;When &lt;script type=&quot;math/tex&quot;&gt;\vec{f}=(f_1,\ldots,f_n)&lt;/script&gt; is a vector valued map, the convolution with a scalar function &lt;script type=&quot;math/tex&quot;&gt;g&lt;/script&gt; can be defined by component-wise convolution. The output of the convolution is still an &lt;script type=&quot;math/tex&quot;&gt;n&lt;/script&gt;-vector valued function. Its &lt;script type=&quot;math/tex&quot;&gt;(2,r)&lt;/script&gt;-norm is defined by&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+\left(\int\Vert \vec{f}\ast g(x)\Vert_2^r dx\right)^{1/r}\,.
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;We can show that it still satisfies Young’s inequality.&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+\Vert\vec{f}\ast g\Vert_{2,r}
+&amp; = \left\Vert\Vert \vec{f}\ast g(x)\Vert_2\right\Vert_r\\
+&amp; = \left\Vert\sup_{\vec{v}\in S^{n-1}} \vec{f}\ast g(x)
+\cdot v\right\Vert_r \\
+&amp; \le \left\Vert\sup_{\vec{v}\in S^{n-1}}
+\int\vert\vec{f}(t)\cdot v\vert
+\vert g(t-x)\vert dt \right\Vert_r \\
+&amp; \le \left\Vert \Vert\vec{f}\Vert_2\ast
+\vert g\vert\right\Vert_r \\
+&amp; \le \Vert\vec{f}\Vert_{2,p}\Vert g\Vert_q\,.
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;h2 id=&quot;reverse-case&quot;&gt;Reverse Case&lt;/h2&gt;
+&lt;p&gt;All the results above hold for &lt;script type=&quot;math/tex&quot;&gt;1\le p,q,r&lt;/script&gt;. Actually, for &lt;script type=&quot;math/tex&quot;&gt;0\le p,q,r\le 1&lt;/script&gt;, we have the reverse Holder’s and Young’s inequality. We start with reverse Jensen’s inequality. Note that for a convex function &lt;script type=&quot;math/tex&quot;&gt;f&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;\{x_i\}_{i=1}^n&lt;/script&gt; in its domain, we always have&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+f\left(\sum c_i x_i\right)
+\begin{cases}
+\le \sum c_if(x_i)\quad &amp; \sum c_i = 1\wedge \forall i
+~c_i\in [0,1]\,,\\
+\ge \sum c_if(x_i)\quad &amp; \sum c_i = 1\wedge \forall i\ne k
+~c_i\le 0,c_k\ge 1\,.
+\end{cases}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;The second case describes the case when the affine combination of &lt;script type=&quot;math/tex&quot;&gt;\{x_i\}&lt;/script&gt; is &lt;em&gt;outside a corner of the convex hull&lt;/em&gt;. The 1-dim case is shown below,&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/2018-07-09-fig1.png&quot; alt=&quot;fig1&quot; width=&quot;400px&quot; class=&quot;align-center&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The proof of the second case is based on the first case. Denote &lt;script type=&quot;math/tex&quot;&gt;x_0 = \sum c_i x_i&lt;/script&gt;. Since &lt;script type=&quot;math/tex&quot;&gt;c_k\ge 1&lt;/script&gt; we have&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+c_k = 1 - \sum_{i\ne k}c_i\\
+1 = \frac{1}{c_k}+\sum_{i\ne k}\frac{-c_i}{c_k}\\
+x_k = \frac{x_0}{c_k}+\sum_{i\ne k}\frac{-c_ix_i}{c_k}\,.
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;By usual Jensen’s inequality, we have&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+f(x_k) \le \frac{f(x_0)}{c_k} + \sum_{i\ne k}
+\frac{-c_i f(x_i)}{c_k}\\
+f(x_0) \ge \sum_{i}c_if(x_i)\,.
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;The general case, that is for more than 1 coefficients greater than &lt;script type=&quot;math/tex&quot;&gt;1&lt;/script&gt;, does not hold. It can be shown by the following illustration.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/2018-07-09-fig2.png&quot; alt=&quot;fig2&quot; width=&quot;400px&quot; class=&quot;align-center&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;When &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt; is sufficiently large, the coefficients of &lt;script type=&quot;math/tex&quot;&gt;a,c&lt;/script&gt; are greater than &lt;script type=&quot;math/tex&quot;&gt;1&lt;/script&gt; and the ones of &lt;script type=&quot;math/tex&quot;&gt;b,d&lt;/script&gt; are less than &lt;script type=&quot;math/tex&quot;&gt;0&lt;/script&gt;. But since the dashed line is always parallel and above the surface,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+f\left(\frac{ta+tc+(1-t)b+(1-t)d}{2}\right) \\
+\le \frac{tf(a)+tf(c)+(1-t)f(b)+(1-t)f(d)}{2}\,.
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;By reverse Jensen’s inequality, we have for &lt;script type=&quot;math/tex&quot;&gt;a,b,c &gt; 0&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;p,q\le 0, s\ge 1&lt;/script&gt;, and &lt;script type=&quot;math/tex&quot;&gt;p+q+s=1&lt;/script&gt;,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+a^pb^qc^s \ge \frac{a}{p}+\frac{b}{q}+\frac{c}{s}\,.
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;Then reverse Holder is given by&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+\Vert fgh\Vert_1 \ge \Vert f\Vert_p\Vert g\Vert_q\Vert h\Vert_s\,,
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;for &lt;script type=&quot;math/tex&quot;&gt;% &lt;![CDATA[
+1/p+1/q+1/s=1, p,q&lt;0,s&lt;1 %]]&gt;&lt;/script&gt;. Clearly we need &lt;script type=&quot;math/tex&quot;&gt;f,g&lt;/script&gt; to be almost surely non-zero. &lt;script type=&quot;math/tex&quot;&gt;\Vert\cdot\Vert_{p/q/s}&lt;/script&gt; are just convenient notations, not norms.&lt;/p&gt;
+
+&lt;p&gt;Repeat the argument for the classical case, we get the reverse Young’s inequality,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+\Vert f\ast g\Vert_r \ge \Vert f\Vert_q\Vert g\Vert_q\,,
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;for &lt;script type=&quot;math/tex&quot;&gt;% &lt;![CDATA[
+1/p+1/q=1+1/r, 0&lt;p,q,r&lt;1 %]]&gt;&lt;/script&gt;.&lt;/p&gt;</content><author><name>Yitong Sun</name></author><category term="real analysis" /><summary type="html">Classical Case A quick proof of general Holder’s inequality is as follows. First, by Jensen’s inequality, we have for positive and satisfying ,</summary></entry><entry><title type="html">Bessel Functions and Fourier Transform of Radial Functions</title><link href="https://blog.syitong.me/notes/bessel/" rel="alternate" type="text/html" title="Bessel Functions and Fourier Transform of Radial Functions" /><published>2018-06-30T00:00:00-04:00</published><updated>2018-06-30T00:00:00-04:00</updated><id>https://blog.syitong.me/notes/bessel</id><content type="html" xml:base="https://blog.syitong.me/notes/bessel/">&lt;h2 id=&quot;definition-of-bessel-functions&quot;&gt;Definition of Bessel Functions&lt;/h2&gt;
+
+&lt;p&gt;There are several ways to define Bessel functions. The one given by &lt;a class=&quot;citation&quot; href=&quot;#Grafakos2008&quot;&gt;(Grafakos, 2008)&lt;/a&gt; Appendix B is as follows,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;J_v(t) = \frac{(t/2)^v}{\Gamma(v+1/2)\Gamma(1/2)}
+\int_{-1}^{1} e^{its}(1-s^2)^v\frac{ds}{\sqrt{1-s^2}}\,.\tag{1}&lt;/script&gt;
+
+&lt;p&gt;Here &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt; is any complex number with real part greater than &lt;script type=&quot;math/tex&quot;&gt;1/2&lt;/script&gt;. The second definition is that &lt;script type=&quot;math/tex&quot;&gt;J_v(t)&lt;/script&gt; is the solution of the ODE,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;t^2\frac{d^2y}{dt^2}+t\frac{dy}{dt}+(t^2-v^2)y=0\,.&lt;/script&gt;
+
+&lt;p&gt;The third one is the original Bessel’s definition, which only works for integer values of &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt;.&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;J_v(t)=\frac{1}{2\pi}\int_{-\pi}^\pi e^{i(t\sin\tau-v\tau)}d\tau\,.\tag{2}&lt;/script&gt;
+
+&lt;p&gt;Now we show that these three definitions are equivalent. First, applying integration by parts, we can show that&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+&amp; 2\left(v+\frac{1}{2}\right)\int_{-1}^1ise^{its}(1-s^2)^v\frac{ds}{\sqrt{1-s^2}} \\
+&amp; = -i\int_{-1}^1 e^{its}d(1-s^2)^{v+1/2} \\
+&amp; = \int_{-1}^1te^{its}(1-s^2)^{v+1/2}ds \\
+&amp; = t\int_{-1}^1e^{its}(1-s^2)^{v+1}\frac{ds}{\sqrt{1-s^2}}\,.
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;With the result above, to show that &lt;script type=&quot;math/tex&quot;&gt;J_v(t)&lt;/script&gt; is the solution of the differential equation, we only need to plug it into the equation and check. &lt;em&gt;Note that the second order differential equation has two independent solutions, &lt;script type=&quot;math/tex&quot;&gt;J_v(t)&lt;/script&gt; is only one of them&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;The simple derivation also implies the following identity,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\frac{d}{dt}\left(t^{-v}J_v(t)\right)=-t^{-v}J_{v+1}(t)\,.\tag{3}&lt;/script&gt;
+
+&lt;p&gt;With this identity, we can show the definition for integer &lt;script type=&quot;math/tex&quot;&gt;v&lt;/script&gt;. It is proved by induction. First when &lt;script type=&quot;math/tex&quot;&gt;v=0&lt;/script&gt;,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+J_0(t) = \frac{1}{\Gamma^2(1/2)}
+\int_{-1}^1 e^{its}\frac{ds}{\sqrt{1-s^2}}\,.
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;Make the variable substitution &lt;script type=&quot;math/tex&quot;&gt;s=\sin(\tau)&lt;/script&gt; and use the fact &lt;script type=&quot;math/tex&quot;&gt;\Gamma(1/2)=\sqrt{\pi}&lt;/script&gt;. We get the base case. Then we verify that (2) also satisfies the recurrence relation (3). The key is still integration by parts and the famous Euler’s identity,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+e^{i\tau}=\cos\tau+i\sin\tau\,.
+\end{equation}&lt;/script&gt;
+
+&lt;h2 id=&quot;fourier-transform-of-measure-on-unit-sphere&quot;&gt;Fourier Transform of Measure on Unit Sphere&lt;/h2&gt;
+
+&lt;p&gt;Denote the uniform measure over the unit sphere &lt;script type=&quot;math/tex&quot;&gt;S^{n-1}&lt;/script&gt; by &lt;script type=&quot;math/tex&quot;&gt;\sigma_{n-1}&lt;/script&gt;. Its Fourier transform&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+\mathcal{F}\sigma_n(t) = \int_{S^{n}}e^{-2\pi it\cdot x}d\sigma_n(x)
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;can be evaluated in the following way. First, for any fixed &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt;, we consider the cylinder coordinates with axis along the direction of &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;(\theta,s)&lt;/script&gt;. &lt;script type=&quot;math/tex&quot;&gt;\theta&lt;/script&gt; is the &lt;script type=&quot;math/tex&quot;&gt;n-1&lt;/script&gt; spherical coordinates and &lt;script type=&quot;math/tex&quot;&gt;s&lt;/script&gt; is the Cartesian coordinate ranging from &lt;script type=&quot;math/tex&quot;&gt;[-1,1]&lt;/script&gt;. Then &lt;script type=&quot;math/tex&quot;&gt;t\cdot x=\vert t\vert s&lt;/script&gt;, and the integral becomes&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+\mathcal{F}\sigma_n(t) &amp; =\int_{-1}^1\int_{\sqrt{1-s^2}S^{n-1}} e^{-2\pi i\vert t\vert s} d\sigma_{n-1}(\theta)\frac{ds}{\sqrt{1-s^2}} \\
+&amp; = A_{n-1}\int_{-1}^1 e^{-2\pi i\vert t\vert s}
+(1-s^2)^{(n-1)/2}\frac{ds}{\sqrt{1-s^2}} \\
+&amp; = \frac{n\Gamma^{n}(1/2)J_{(n-1)/2}(2\pi\vert t\vert)\Gamma(n/2)\Gamma(1/2)}
+{\Gamma(n/2+1)(\pi\vert t\vert)^{(n-1)/2}} \\
+&amp; = \frac{2\pi J_{(n-1)/2}(2\pi\vert t\vert)}
+{(\vert t\vert)^{(n-1)/2}}\,.
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Here &lt;script type=&quot;math/tex&quot;&gt;A_{n-1}&lt;/script&gt; is the surface area of &lt;script type=&quot;math/tex&quot;&gt;n-1&lt;/script&gt; sphere. With this formula we can further get the Fourier transform of any radial functions &lt;script type=&quot;math/tex&quot;&gt;f(x)=f_0(\vert x\vert)&lt;/script&gt; as follows,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+\mathcal{F}f(t)=\frac{2\pi}{\vert t\vert^{(n-2)/2}}
+\int_0^\infty f_0(r)J_{n/2-1}(2\pi r\vert t\vert)r^{n/2}dr\,.
+\end{equation}&lt;/script&gt;
+
+&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
+&lt;ol class=&quot;bibliography&quot;&gt;&lt;li&gt;&lt;span id=&quot;Grafakos2008&quot;&gt;Grafakos, L. (2008). &lt;i&gt;Classical Fourier Analysis&lt;/i&gt;. Springer New York.&lt;/span&gt;&lt;/li&gt;&lt;/ol&gt;</content><author><name>Yitong Sun</name></author><category term="Fourier Analysis" /><summary type="html">Definition of Bessel Functions</summary></entry></feed>

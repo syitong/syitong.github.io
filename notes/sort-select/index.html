@@ -1,0 +1,588 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.16.4 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>            快速排序与快速选择算法 - 孙轶同的博客      Yitong’s Blog      </title>
+<meta name="description" content="之所以突然会对这个问题感兴趣是因为，大概一年前，在毫无准备的情况下去参加某互联网公司的面试，被问到了这样一个问题：“给定一个长度为n的数列，如何快速的找出其中第m大的元素。假设m远小于n。”因为对排序和选择算法完全不熟悉，只知道quicksort的时间复杂度应该是，以及从数列中找出最大值的复杂度是 。只好回答最简单暴力的算法，每次选出最大值然后剔除，这样m次后就找到了第m大的元素，相应的复杂度是。其实当时心里也清楚这显然离最优解有相当大的差距。毕竟这种算法不仅把第m大的元素找出来，还把前m大的都找了出来，而且排好了顺序，多做了很多无用功。况且找出最大值的复杂度只是，找出第m大的不应该比这一复杂度高太多。最近又要准备面试，刷算法题，所以就把排序和选择问题专门看了看。">
+
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="孙轶同的博客|Yitong's Blog">
+<meta property="og:title" content="快速排序与快速选择算法">
+<meta property="og:url" content="https://blog.syitong.me/notes/sort-select/">
+
+
+  <meta property="og:description" content="之所以突然会对这个问题感兴趣是因为，大概一年前，在毫无准备的情况下去参加某互联网公司的面试，被问到了这样一个问题：“给定一个长度为n的数列，如何快速的找出其中第m大的元素。假设m远小于n。”因为对排序和选择算法完全不熟悉，只知道quicksort的时间复杂度应该是，以及从数列中找出最大值的复杂度是 。只好回答最简单暴力的算法，每次选出最大值然后剔除，这样m次后就找到了第m大的元素，相应的复杂度是。其实当时心里也清楚这显然离最优解有相当大的差距。毕竟这种算法不仅把第m大的元素找出来，还把前m大的都找了出来，而且排好了顺序，多做了很多无用功。况且找出最大值的复杂度只是，找出第m大的不应该比这一复杂度高太多。最近又要准备面试，刷算法题，所以就把排序和选择问题专门看了看。">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2018-08-31T00:00:00-04:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://blog.syitong.me/notes/sort-select/">
+
+
+
+
+
+
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Yitong Sun",
+      "url": "https://blog.syitong.me",
+      "sameAs": null
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="https://blog.syitong.me/feed.xml" type="application/atom+xml" rel="alternate" title="孙轶同的博客|Yitong's Blog Feed">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- Mathjax support -->
+
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="https://blog.syitong.me/assets/css/main.css">
+
+<!--[if lte IE 9]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- Baidu Autopush -->
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<!-- Baidu header-->
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">孙轶同的博客|Yitong's Blog</a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/categories/" >Categories</a>
+            </li><li class="masthead__menu-item">
+              <a href="/tags/" >Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/years/" >Years</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle Menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+
+      
+        <img src="/assets/images/icon128.png" alt="Yitong Sun" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Yitong Sun</h3>
+    
+    
+      <p class="author__bio" itemprop="description">
+        长风破浪会有时
+      </p>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="快速排序与快速选择算法">
+    <meta itemprop="description" content="之所以突然会对这个问题感兴趣是因为，大概一年前，在毫无准备的情况下去参加某互联网公司的面试，被问到了这样一个问题：“给定一个长度为n的数列，如何快速的找出其中第m大的元素。假设m远小于n。”因为对排序和选择算法完全不熟悉，只知道quicksort的时间复杂度应该是，以及从数列中找出最大值的复杂度是 。只好回答最简单暴力的算法，每次选出最大值然后剔除，这样m次后就找到了第m大的元素，相应的复杂度是。其实当时心里也清楚这显然离最优解有相当大的差距。毕竟这种算法不仅把第m大的元素找出来，还把前m大的都找了出来，而且排好了顺序，多做了很多无用功。况且找出最大值的复杂度只是，找出第m大的不应该比这一复杂度高太多。最近又要准备面试，刷算法题，所以就把排序和选择问题专门看了看。">
+    <meta itemprop="datePublished" content="August 31, 2018">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">快速排序与快速选择算法
+</h1>
+          
+            <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>之所以突然会对这个问题感兴趣是因为，大概一年前，在毫无准备的情况下去参加某互联网公司的面试，被问到了这样一个问题：“给定一个长度为n的数列，如何快速的找出其中第m大的元素。假设m远小于n。”因为对排序和选择算法完全不熟悉，只知道quicksort的时间复杂度应该是<script type="math/tex">n\log(n)</script>，以及从数列中找出最大值的复杂度是 <script type="math/tex">n</script>。只好回答最简单暴力的算法，每次选出最大值然后剔除，这样m次后就找到了第m大的元素，相应的复杂度是<script type="math/tex">mn</script>。其实当时心里也清楚这显然离最优解有相当大的差距。毕竟这种算法不仅把第m大的元素找出来，还把前m大的都找了出来，而且排好了顺序，多做了很多无用功。况且找出最大值的复杂度只是<script type="math/tex">n</script>，找出第m大的不应该比这一复杂度高太多。最近又要准备面试，刷算法题，所以就把排序和选择问题专门看了看。</p>
+
+<p>首先，排序问题和选择问题相关但又不同。排序问题的复杂度要高于选择问题。但是选择问题在解决的过程中又不可避免的会一定程度的对数列进行部分排序——当然如果仅仅是为了选择，副产品部分排序越少越好。我们这里集中在快速排序quicksort，快速选择quickselect，以及mergesort，三种算法。从名字就可以看出，一三是排序算法，二是选择算法。其中quickselect又涉及一种pivotselect的算法：median of medians。</p>
+
+<h2 id="quicksort">QuickSort</h2>
+
+<p>quicksort算法的核心想法就是“分而治之”(divide and conquer)。随机选择一个轴(pivot)，把大于轴的数移到轴的左侧，小于轴的值移到右侧，这样轴的位置就处于最终正确排序的位置。然后对轴两侧重复这一操作，直到排出全序。时间复杂度的分析也很简单，由于每一轮的比较操作都小于<script type="math/tex">n</script>，所以只要知道迭代多少次停止即可。最好的情况，每次都恰好选到中位数做轴，这样最多<script type="math/tex">\log_2(n)</script>轮就可以完成排序，总的时间复杂度就是<script type="math/tex">n\log(n)</script>。最差的情况，每次都选到最大或最小值做轴，这样相当于每轮迭代序列的长度只减少了1，所以就需要<script type="math/tex">n</script>轮才能完成排序，复杂度就是<script type="math/tex">n^2</script>。至于平均的情况，假设长度为<script type="math/tex">n</script>的序列quicksort的平均时间代价是<script type="math/tex">C(n)</script>，而排序后轴值左边的序列长度为<script type="math/tex">i</script>，那么</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{align}
+C(n) & = n-1 + \frac{1}{n}\sum_{i=0}^{n-1}C(n-i-1)+C(i) \\
+C(n) & = n-1 + \frac{2}{n}\sum_{i=0}^{n-1}C(i) \\
+nC(n)-(n-1)C(n-1) & = 2(n-1) + 2C(n-1) \\
+C(n) & = \frac{2(n-1)}{n} + \frac{n+1}{n}C(n-1) \\
+\frac{C(n)}{2n} & \le \frac{C(n-1)}{2(n-1)} + \frac1n \\
+C(n) & \le 2n\ln(n)\,. 
+\end{align} %]]></script>
+
+<h2 id="quickselect">QuickSelect</h2>
+
+<p>下面我们在来看看快速选择算法。核心思想与quicksort一样，也是不断的将轴放到正确的位置。但因为只需要选择一个元素，所以每次只需要对包含目标元素的那一侧继续处理。对于简单版本的quickselect来说，这就足够了，其平均时间代价就是<script type="math/tex">O(n)</script>。因为轴是按照均匀分布选取，那么它落在四分位区间的概率就是<script type="math/tex">1/2</script>，也就是说较长的那边最多也只有<script type="math/tex">3n/4</script>。而另外<script type="math/tex">1/2</script>的概率，我们用<script type="math/tex">n</script>作为上界。这样按照不断选取子序列的方式，到子序列长度为<script type="math/tex">1</script>。假设长度为<script type="math/tex">n</script>的情况下，quickselect的平均代价为<script type="math/tex">C(n)</script>，那么我们就有</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{align}
+C(n) & \le n+\frac12C(3n/4)+\frac12C(n) \\
+C(n) & \le 2n + C(3n/4) \\
+C(n) & \le \sum_{i=0}^\infty\left(\frac34\right)^i2n \\
+& = O(n)\,.
+\end{align} %]]></script>
+
+<p>当然，最差的情况时间代价会达到<script type="math/tex">n^2</script>。</p>
+
+<p>为了避免最差的情况出现，我们在选择轴的时候就需要慎重一些。相应的就有了median of medians的算法。其想法就是把当前序列划分成长度为5或者更大的奇数的片段，找出每个片段的中位数，再去找出这些中位数的中位数。在一个小片段上求中位数显然只需要依赖于片段长度的时间，在所有片段上都求中位数就是<script type="math/tex">O(n)</script>的复杂度。而去求中位数们的中位数时，使用迭代回quickselect的办法。迭代回去的序列长度就只有<script type="math/tex">n/5</script>。而找出中位数的中位数作为轴，最差也能使序列长度减少<script type="math/tex">1/5+1/10 = 3/10</script>。假设结合了median of medians的quickselect的平均代价为<script type="math/tex">C(n)</script>，那么，</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{align}
+C(n) & \le n + C(7n/10) + C(n/5) + O(n) \\
+C(n) & \le O(n) + C(9n/10) \\
+& = O(n)\,.
+\end{align} %]]></script>
+
+<p>显然，median of medians与quicksort结合也可以将它在最差情形下的时间代价提升至<script type="math/tex">O(n\log n)</script>。</p>
+
+<h2 id="mergesort">MergeSort</h2>
+
+<p>最后我们再来看看mergesort。它是一种最好，最差和平均复杂度都是<script type="math/tex">O(n\log n)</script>的排序算法。其想法十分简单，就是把序列分解为长度为2的小片段，经过<script type="math/tex">n/2</script>次比较，将他们完全排序。然后再将小片段两两合并，形成每个长度为4的片段最多需要3次比较，共<script type="math/tex">3n/4</script>次比较。然后继续两两结合，以此类推。显然总的时间复杂度就介于<script type="math/tex">n\log_2 n</script>与<script type="math/tex">\frac n2\log_2 n</script>之间。但是mergesort的优势在于易于并行实现。</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/tags/algorithms" class="page__taxonomy-item" rel="tag">algorithms</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/notes" class="page__taxonomy-item" rel="tag">notes</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2018-08-31T00:00:00-04:00">August 31, 2018</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+    <h4 class="page__share-title">Share on</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?text=%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F%E4%B8%8E%E5%BF%AB%E9%80%9F%E9%80%89%E6%8B%A9%E7%AE%97%E6%B3%95%20https%3A%2F%2Fblog.syitong.me%2Fnotes%2Fsort-select%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fblog.syitong.me%2Fnotes%2Fsort-select%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fblog.syitong.me%2Fnotes%2Fsort-select%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/articles/rff-intro/" class="pagination--pager" title="What Is Random Fourier Features Method?
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/articles/rff-intro/" rel="permalink">What Is Random Fourier Features Method?
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  2 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">Random Fourier features method, or more general random features method is a method to help transform data which are not linearly separable to linearly separa...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/articles/tmux-rename/" rel="permalink">如何阻止ssh重命名tmux窗口
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">在使用tmux多窗口终端时，每次登录学校的服务器后，窗口的标签就会被改成与服务器的prompt相同。而且登出后也不会改回来，导致tmux经常几个窗口的名字都很长，也没有反映窗口当时的状况。之所以会这样，是因为tmux默认允许一些进程修改窗口名，而ssh对终端窗口的命名规则是由服务器上的配置文件决定的。
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/articles/cb-setup/" rel="permalink">HiDPI Chromebook上Crouton的设置
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">入手HP Chromebook 13 g1大半年，一开始就安装了Gallium OS。但Gallium OS迟迟无法解决intel skylake model上的音频输出问题，加上Gallium OS的电源管理比Chrome OS要弱不少，不接电源的情况下无法长时间的使用。忍了大半年后，终于回到了Crouton的...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/notes/prod-euler-gamma/" rel="permalink">Product Form of Euler’s Limit Formula for the Gamma Function
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">This note is a continuation of last one. By the definition of , for , we can rewrite it in the following form,
+
+</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2019 Yitong Sun. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.8.2/js/all.js" integrity="sha384-DJ25uNYET2XCl5ZF++U8eNxPWqcKohUUBUpKGlNLMchM7q4Wjg2CUpjHLaL8yYPH" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

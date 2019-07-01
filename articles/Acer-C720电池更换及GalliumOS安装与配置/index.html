@@ -1,0 +1,598 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.16.4 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>            Acer C720电池更换及GalliumOS安装与配置 - 孙轶同的博客      Yitong’s Blog      </title>
+<meta name="description" content="八月份完成论文的一个主要部分，决定犒赏一下自己。一直以来都想升级一下我的C720，毕竟是4年前的电脑了。特别是电池续航已经大不如从前，系统显示电池满电容量也只有标称容量的一半左右。没有了最初让我惊艳的全天不插电的续航表现，其他方面的弱点就让人更不能忍受了，比如屏幕的大小和分辨率，都距离今天的商务级的dell cp 13，hp cp 13差距较大了，更不用说asus c302和samsung cp pro了。">
+
+
+  <meta name="author" content="孙轶同">
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="孙轶同的博客|Yitong's Blog">
+<meta property="og:title" content="Acer C720电池更换及GalliumOS安装与配置">
+<meta property="og:url" content="https://blog.syitong.me/articles/Acer-C720%E7%94%B5%E6%B1%A0%E6%9B%B4%E6%8D%A2%E5%8F%8AGalliumOS%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE/">
+
+
+  <meta property="og:description" content="八月份完成论文的一个主要部分，决定犒赏一下自己。一直以来都想升级一下我的C720，毕竟是4年前的电脑了。特别是电池续航已经大不如从前，系统显示电池满电容量也只有标称容量的一半左右。没有了最初让我惊艳的全天不插电的续航表现，其他方面的弱点就让人更不能忍受了，比如屏幕的大小和分辨率，都距离今天的商务级的dell cp 13，hp cp 13差距较大了，更不用说asus c302和samsung cp pro了。">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2017-08-30T00:00:00-04:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://blog.syitong.me/articles/Acer-C720%E7%94%B5%E6%B1%A0%E6%9B%B4%E6%8D%A2%E5%8F%8AGalliumOS%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE/">
+
+
+
+
+
+
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Yitong Sun",
+      "url": "https://blog.syitong.me",
+      "sameAs": null
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="https://blog.syitong.me/feed.xml" type="application/atom+xml" rel="alternate" title="孙轶同的博客|Yitong's Blog Feed">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- Mathjax support -->
+
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="https://blog.syitong.me/assets/css/main.css">
+
+<!--[if lte IE 9]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- Baidu Autopush -->
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<!-- Baidu header-->
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">孙轶同的博客|Yitong's Blog</a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/categories/" >Categories</a>
+            </li><li class="masthead__menu-item">
+              <a href="/tags/" >Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/years/" >Years</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle Menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+
+      
+        <img src="/assets/images/icon128.png" alt="孙轶同" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">孙轶同</h3>
+    
+    
+      <p class="author__bio" itemprop="description">
+        长风破浪会有时
+      </p>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Acer C720电池更换及GalliumOS安装与配置">
+    <meta itemprop="description" content="八月份完成论文的一个主要部分，决定犒赏一下自己。一直以来都想升级一下我的C720，毕竟是4年前的电脑了。特别是电池续航已经大不如从前，系统显示电池满电容量也只有标称容量的一半左右。没有了最初让我惊艳的全天不插电的续航表现，其他方面的弱点就让人更不能忍受了，比如屏幕的大小和分辨率，都距离今天的商务级的dell cp 13，hp cp 13差距较大了，更不用说asus c302和samsung cp pro了。">
+    <meta itemprop="datePublished" content="August 30, 2017">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Acer C720电池更换及GalliumOS安装与配置
+</h1>
+          
+            <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>八月份完成论文的一个主要部分，决定犒赏一下自己。一直以来都想升级一下我的C720，毕竟是4年前的电脑了。特别是电池续航已经大不如从前，系统显示电池满电容量也只有标称容量的一半左右。没有了最初让我惊艳的全天不插电的续航表现，其他方面的弱点就让人更不能忍受了，比如屏幕的大小和分辨率，都距离今天的商务级的dell cp 13，hp cp 13差距较大了，更不用说asus c302和samsung cp pro了。</p>
+
+<p>然而上网物色了一圈，在几台最新的chromebook中拿不定主意。当然最主要的因素还是价格都远高于C720当初的199刀。而且还有潜在的对GalliumOS不兼容的问题。其实最想入手的是Google自家的pixel 2015版，可是貌似这个机型已经成了收藏品一般的存在，不要说新机，就连二手的都很难找到。最近又有<a href="https://www.engadget.com/2017/08/21/google-said-launching-new-chromebook-pixel-and-small-home/">流言</a>，说Google要在秋季再推出一款pixel chromebook，所以我也打算再让我的C720坚持一段时间。于是就有了换电池的念头。</p>
+
+<p>之前因为帮老妈和同学拆过两次笔记本电脑，所以现在胆子愈发的大了。看<a href="https://www.youtube.com/watch?v=hgdBet2yNFU">YouTube上的视频</a>，换电池也不是什么困难的工作。事实上也确实如此。电池是在Amazon上的一个买配件的第三方商铺购买的，看销量之前也没什么人买过。型号也略有不同，我的C720原装电池是AP13J3K，购得的是AP13J4K，但是之前在网上看到这两种型号的电池都有在C720上使用，有些店家也是声称通用，所以估计问题不大。拆机换电池的过程就不重复了，可以去看前面的视频链接。更换上的新电池实际容量和标称容量基本一致，所以估计应该能达到新机时的续航时间。</p>
+
+<p>然而一个没有料到的问题是，在拆机更换电池之后，原本正常使用的GalliumOS无法启动了，大概是和stock bios的设置有关系。我不得不先把C720恢复到ChromeOS，然后再走一遍GalliumOS的安装过程。装好之后还要再把之前常用的应用程序都安装并设置好，这个过程比装系统还要麻烦的多。所以在此做一个记录，一方面可以帮助有意将Chromebook+Linux作为常用工作电脑的同学提供一个我的大概的应用清单，另一方面也可以为自己以后再走类似过程时省去一些上网查资料的功夫。</p>
+
+<ol>
+  <li>
+    <p>首先是添加中文支持。这个Linux自带的语言选项就可以搞定。然后安装上搜狗的Linux中文输入法。</p>
+  </li>
+  <li>
+    <p>usb存储以及Dropbox支持。由于C720本身存储空间只有16G，安装完GalliumOS系统后只剩下10G不到，所以在电脑上长期插一个便携的usb drive是很有必要的。Sandisk和Samsung都有这种大容量的袖珍usb盘。这里有两个问题。首先，Dropbox要在usb上正常工作，必须保证在开机或者从睡眠中恢复时usb drive要能够自动加载(mount)，否则Dropbox就会因为找不到同步的文件夹而断开账户，或者直接自动在home文件夹下创建新的同步文件夹。开机自动挂载可以在<code class="highlighter-rouge">gnome-disk-utility</code>中设置，具体的选项为</p>
+
+    <p><code class="highlighter-rouge">user,permissions,uid=1000,gid=1000,umask=022</code></p>
+
+    <p>挂载点为<code class="highlighter-rouge">/home/Portable</code> 。文件系统类型要按照usb drive的格式选定，我的是ntfs，当初选择该类型似乎是因为其他类型会有各自的问题。前四个选项是为了保证指定的user有权限在登录时挂载usb drive，最后一个则是为了保证挂载后能够Dropbox有足够的权限改动存储的文件。</p>
+  </li>
+  <li>
+    <p>在不安装LaTeX的情况下安装LyX。一方面是由于存储空间的限制，另一方面也是因为在本地管理LaTeX包实在是太麻烦，而ShareLaTeX的服务又很好用，所以我已经很久不在本地编译LaTeX文件了。但是LyX作为所见即所得的编辑器还是挺好用的。由于LyX需要本地安装LaTeX，所以就需要通过安装空的LaTeX包骗过LyX。具体参见<a href="https://www.tug.org/texlive/debian.html">Integrating vanilla TeX Live with Debian</a> 。</p>
+  </li>
+  <li>
+    <p>Vim的配置。主要就是已有的配置文件，加上<a href="https://github.com/VundleVim/Vundle.vim">Vundle</a> 管理的几个插件。</p>
+  </li>
+  <li>
+    <p>其他就是一些常用软件的安装，包括：</p>
+
+    <ul>
+      <li>
+        <p><a href="https://typora.io/">typora</a> ，一个简洁的所见即所得的markdown编辑器，这篇文章就是用它写的；</p>
+      </li>
+      <li>
+        <p>Tagspace，一个文件标签管理应用；</p>
+      </li>
+      <li>
+        <p>Jabref，bibtex文献管理应用；</p>
+      </li>
+      <li>
+        <p>Jekyll，静态博客生成应用；</p>
+      </li>
+      <li>
+        <p>GeoGebra，数学教学辅助工具；</p>
+
+        <p>……</p>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<p>以上就是这一整天折腾的记录。希望对其他喜欢折腾chromebook的人能有所帮助。</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/tags/chromebook" class="page__taxonomy-item" rel="tag">chromebook</a><span class="sep">, </span>
+    
+      
+      
+      <a href="/tags/linux" class="page__taxonomy-item" rel="tag">linux</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/articles" class="page__taxonomy-item" rel="tag">articles</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2017-08-30T00:00:00-04:00">August 30, 2017</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+    <h4 class="page__share-title">Share on</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?text=Acer+C720%E7%94%B5%E6%B1%A0%E6%9B%B4%E6%8D%A2%E5%8F%8AGalliumOS%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE%20https%3A%2F%2Fblog.syitong.me%2Farticles%2FAcer-C720%25E7%2594%25B5%25E6%25B1%25A0%25E6%259B%25B4%25E6%258D%25A2%25E5%258F%258AGalliumOS%25E5%25AE%2589%25E8%25A3%2585%25E4%25B8%258E%25E9%2585%258D%25E7%25BD%25AE%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fblog.syitong.me%2Farticles%2FAcer-C720%25E7%2594%25B5%25E6%25B1%25A0%25E6%259B%25B4%25E6%258D%25A2%25E5%258F%258AGalliumOS%25E5%25AE%2589%25E8%25A3%2585%25E4%25B8%258E%25E9%2585%258D%25E7%25BD%25AE%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fblog.syitong.me%2Farticles%2FAcer-C720%25E7%2594%25B5%25E6%25B1%25A0%25E6%259B%25B4%25E6%258D%25A2%25E5%258F%258AGalliumOS%25E5%25AE%2589%25E8%25A3%2585%25E4%25B8%258E%25E9%2585%258D%25E7%25BD%25AE%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/articles/Chromebook%E5%A6%82%E4%BD%95%E8%AE%A9%E6%88%91%E5%8F%98%E6%88%90%E4%B8%80%E4%B8%AALinux%E7%B2%89/" class="pagination--pager" title="Chromebook如何让我变一个Linux粉
+">Previous</a>
+    
+    
+      <a href="/notes/spectrum-Gaussian/" class="pagination--pager" title="On the Spectrum Decay Rate of Gaussian Kernel Operator
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/notes/sort-select/" rel="permalink">快速排序与快速选择算法
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">之所以突然会对这个问题感兴趣是因为，大概一年前，在毫无准备的情况下去参加某互联网公司的面试，被问到了这样一个问题：“给定一个长度为n的数列，如何快速的找出其中第m大的元素。假设m远小于n。”因为对排序和选择算法完全不熟悉，只知道quicksort的时间复杂度应该是，以及从数列中找出最大值的复杂度是 。只好回答最简...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/articles/rff-intro/" rel="permalink">What Is Random Fourier Features Method?
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  2 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">Random Fourier features method, or more general random features method is a method to help transform data which are not linearly separable to linearly separa...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/articles/tmux-rename/" rel="permalink">如何阻止ssh重命名tmux窗口
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">在使用tmux多窗口终端时，每次登录学校的服务器后，窗口的标签就会被改成与服务器的prompt相同。而且登出后也不会改回来，导致tmux经常几个窗口的名字都很长，也没有反映窗口当时的状况。之所以会这样，是因为tmux默认允许一些进程修改窗口名，而ssh对终端窗口的命名规则是由服务器上的配置文件决定的。
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/articles/cb-setup/" rel="permalink">HiDPI Chromebook上Crouton的设置
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">入手HP Chromebook 13 g1大半年，一开始就安装了Gallium OS。但Gallium OS迟迟无法解决intel skylake model上的音频输出问题，加上Gallium OS的电源管理比Chrome OS要弱不少，不接电源的情况下无法长时间的使用。忍了大半年后，终于回到了Crouton的...</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2019 Yitong Sun. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.8.2/js/all.js" integrity="sha384-DJ25uNYET2XCl5ZF++U8eNxPWqcKohUUBUpKGlNLMchM7q4Wjg2CUpjHLaL8yYPH" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

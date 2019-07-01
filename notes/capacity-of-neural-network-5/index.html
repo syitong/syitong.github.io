@@ -1,0 +1,560 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.16.4 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>            Capacity of Neural Networks (5): Sauer’s Lemma - 孙轶同的博客      Yitong’s Blog      </title>
+<meta name="description" content="In this note we prove the Sauer’s lemma which plays the key role in establishing the connection between VC-dimension and Rademacher complexity. We use the proof in Section 8.3 of (Vershynin, 2017). There are two steps in the proof. First, we prove Pajor’s lemma that for any boolean function class  defined on a finite set , its cardinality is bounded by">
+
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="孙轶同的博客|Yitong's Blog">
+<meta property="og:title" content="Capacity of Neural Networks (5): Sauer’s Lemma">
+<meta property="og:url" content="https://blog.syitong.me/notes/capacity-of-neural-network-5/">
+
+
+  <meta property="og:description" content="In this note we prove the Sauer’s lemma which plays the key role in establishing the connection between VC-dimension and Rademacher complexity. We use the proof in Section 8.3 of (Vershynin, 2017). There are two steps in the proof. First, we prove Pajor’s lemma that for any boolean function class  defined on a finite set , its cardinality is bounded by">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2018-01-19T00:00:00-05:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://blog.syitong.me/notes/capacity-of-neural-network-5/">
+
+
+
+
+
+
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Yitong Sun",
+      "url": "https://blog.syitong.me",
+      "sameAs": null
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="https://blog.syitong.me/feed.xml" type="application/atom+xml" rel="alternate" title="孙轶同的博客|Yitong's Blog Feed">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- Mathjax support -->
+
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="https://blog.syitong.me/assets/css/main.css">
+
+<!--[if lte IE 9]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- Baidu Autopush -->
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<!-- Baidu header-->
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">孙轶同的博客|Yitong's Blog</a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/categories/" >Categories</a>
+            </li><li class="masthead__menu-item">
+              <a href="/tags/" >Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/years/" >Years</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle Menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+
+      
+        <img src="/assets/images/icon128.png" alt="Yitong Sun" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Yitong Sun</h3>
+    
+    
+      <p class="author__bio" itemprop="description">
+        长风破浪会有时
+      </p>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Capacity of Neural Networks (5): Sauer’s Lemma">
+    <meta itemprop="description" content="In this note we prove the Sauer’s lemma which plays the key role in establishing the connection between VC-dimension and Rademacher complexity. We use the proof in Section 8.3 of (Vershynin, 2017). There are two steps in the proof. First, we prove Pajor’s lemma that for any boolean function class  defined on a finite set , its cardinality is bounded by">
+    <meta itemprop="datePublished" content="January 19, 2018">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Capacity of Neural Networks (5): Sauer’s Lemma
+</h1>
+          
+            <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  1 minute read
+</p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>In this note we prove the Sauer’s lemma which plays the key role in establishing the connection between VC-dimension and Rademacher complexity. We use the proof in Section 8.3 of <a class="citation" href="#Vershynin2017">(Vershynin, 2017)</a>. There are two steps in the proof. First, we prove Pajor’s lemma that for any boolean function class <script type="math/tex">\mathcal{F}</script> defined on a finite set <script type="math/tex">\Omega</script>, its cardinality is bounded by</p>
+
+<script type="math/tex; mode=display">\begin{equation}
+\vert\{\Lambda\subset\Omega\mid \Lambda \text{ is shattered by }\mathcal{F}\}\vert\,.
+\end{equation}</script>
+
+<p>Then if the VC-dimension of <script type="math/tex">\mathcal{F}</script> is <script type="math/tex">D</script> and <script type="math/tex">\vert\Omega\vert = n</script>, the maximum number of shattered subsets of <script type="math/tex">\Omega</script> is</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{align}
+\sum_{k=0}^D \pmatrix{n \\ k} & \le \left(\frac{n}{D}\right)^D\sum_{k=0}^D\pmatrix{n \\ k}\left(\frac{D}{n}\right)^k \\
+  & \le \left(\frac{n}{D}\right)^D\left(1 + \frac{D}{n}\right)^n \\
+  & \le \left(\frac{n}{D}\right)^De^D\,.
+\end{align} %]]></script>
+
+<p>Now let’s use induction to prove Pajor’s lemma. If <script type="math/tex">\vert\Omega\vert = 1</script>, then there are either 1 or 2 boolean functions defined on <script type="math/tex">\Omega</script>. If there is 1 function, then no subset can be shattered. We take the convention that <script type="math/tex">\vert\emptyset\vert = 1</script>. If there are 2 functions, then all subsets can be shattered, so the cardinality of shattered subsets is 2. Assuming the conclusion holds for <script type="math/tex">\vert\Omega\vert = n</script>, for an <script type="math/tex">\Omega</script> with <script type="math/tex">n+1</script> points, we take out one point <script type="math/tex">x_0</script> and denote the rest points by <script type="math/tex">\Omega_n</script>. Then the function class <script type="math/tex">\mathcal{F}</script> can be splitted into two disjoint subsets <script type="math/tex">\mathcal{F}_0</script> and <script type="math/tex">\mathcal{F}_1</script> according to their values at <script type="math/tex">x_0</script>. Denote the class of subsets shattered by <script type="math/tex">\mathcal{F}_0,\mathcal{F}_1</script> in <script type="math/tex">\Omega_0</script> by <script type="math/tex">S_0</script> and <script type="math/tex">S_1</script>, respectively. By induction hypothesis, <script type="math/tex">\vert\mathcal{F}_0\vert \le \vert S_0\vert</script> and <script type="math/tex">\vert\mathcal{F}_1\vert \le \vert S_1\vert</script>. Since <script type="math/tex">\vert\mathcal{F}\vert = \vert\mathcal{F}_0\vert + \vert\mathcal{F}_1\vert</script>, if we can show that <script type="math/tex">\vert S_0\vert+\vert S_1\vert\le\vert S\vert</script>, then we are done. For the subsets in <script type="math/tex">S_0</script>, they can be shattered by <script type="math/tex">\mathcal{F}_0</script>; for the subsets in <script type="math/tex">S_1-S_0</script>, they can be shattered by <script type="math/tex">\mathcal{F}_1</script>. For the subsets <script type="math/tex">A</script> in <script type="math/tex">S_0 \cap S_1</script>, we consider <script type="math/tex">A\cup{x_0}</script> and it can be shattered by <script type="math/tex">\mathcal{F}</script> because if the label of <script type="math/tex">x_0</script> is 0, we can find a function in <script type="math/tex">\mathcal{F}_0</script> to shatter it and if the label of <script type="math/tex">x_0</script> is 1, we can find a function in <script type="math/tex">\mathcal{F}_1</script> to shatter it.</p>
+
+<h2 id="reference">Reference</h2>
+<ol class="bibliography"><li><span id="Vershynin2017">Vershynin, R. (2017). <i>High Dimensional Probability</i>.</span></li></ol>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/tags/statistical-learning" class="page__taxonomy-item" rel="tag">statistical learning</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/notes" class="page__taxonomy-item" rel="tag">notes</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2018-01-19T00:00:00-05:00">January 19, 2018</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+    <h4 class="page__share-title">Share on</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?text=Capacity+of+Neural+Networks+%285%29%3A+Sauer%27s+Lemma%20https%3A%2F%2Fblog.syitong.me%2Fnotes%2Fcapacity-of-neural-network-5%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fblog.syitong.me%2Fnotes%2Fcapacity-of-neural-network-5%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fblog.syitong.me%2Fnotes%2Fcapacity-of-neural-network-5%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/notes/proof-of-stirling-formula/" class="pagination--pager" title="Proof of Stirling’s Formula
+">Previous</a>
+    
+    
+      <a href="/notes/log-loss-and-multi-class-hinge-loss-1/" class="pagination--pager" title="Log Loss and Multi-Class Hinge Loss (1)
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/notes/sort-select/" rel="permalink">快速排序与快速选择算法
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">之所以突然会对这个问题感兴趣是因为，大概一年前，在毫无准备的情况下去参加某互联网公司的面试，被问到了这样一个问题：“给定一个长度为n的数列，如何快速的找出其中第m大的元素。假设m远小于n。”因为对排序和选择算法完全不熟悉，只知道quicksort的时间复杂度应该是，以及从数列中找出最大值的复杂度是 。只好回答最简...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/articles/rff-intro/" rel="permalink">What Is Random Fourier Features Method?
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  2 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">Random Fourier features method, or more general random features method is a method to help transform data which are not linearly separable to linearly separa...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/articles/tmux-rename/" rel="permalink">如何阻止ssh重命名tmux窗口
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">在使用tmux多窗口终端时，每次登录学校的服务器后，窗口的标签就会被改成与服务器的prompt相同。而且登出后也不会改回来，导致tmux经常几个窗口的名字都很长，也没有反映窗口当时的状况。之所以会这样，是因为tmux默认允许一些进程修改窗口名，而ssh对终端窗口的命名规则是由服务器上的配置文件决定的。
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/articles/cb-setup/" rel="permalink">HiDPI Chromebook上Crouton的设置
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">入手HP Chromebook 13 g1大半年，一开始就安装了Gallium OS。但Gallium OS迟迟无法解决intel skylake model上的音频输出问题，加上Gallium OS的电源管理比Chrome OS要弱不少，不接电源的情况下无法长时间的使用。忍了大半年后，终于回到了Crouton的...</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2019 Yitong Sun. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.8.2/js/all.js" integrity="sha384-DJ25uNYET2XCl5ZF++U8eNxPWqcKohUUBUpKGlNLMchM7q4Wjg2CUpjHLaL8yYPH" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

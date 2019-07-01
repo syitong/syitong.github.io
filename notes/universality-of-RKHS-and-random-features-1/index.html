@@ -1,0 +1,623 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.16.4 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>            Universal Approximation Property of RKHS and Random Features (1) - 孙轶同的博客      Yitong’s Blog      </title>
+<meta name="description" content="On a subset  of , a binary symmetric function  is called positive definite if the matrix  is positive semi-definite for any list of elements . It is clear that if , it is symmetric and positive definite. It is not surprise that function  is used as some sort of inner product. Such a function is called a kernel function. And it determines a class of functions in the following way,">
+
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="孙轶同的博客|Yitong's Blog">
+<meta property="og:title" content="Universal Approximation Property of RKHS and Random Features (1)">
+<meta property="og:url" content="https://blog.syitong.me/notes/universality-of-RKHS-and-random-features-1/">
+
+
+  <meta property="og:description" content="On a subset  of , a binary symmetric function  is called positive definite if the matrix  is positive semi-definite for any list of elements . It is clear that if , it is symmetric and positive definite. It is not surprise that function  is used as some sort of inner product. Such a function is called a kernel function. And it determines a class of functions in the following way,">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2018-02-20T00:00:00-05:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://blog.syitong.me/notes/universality-of-RKHS-and-random-features-1/">
+
+
+
+
+
+
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Yitong Sun",
+      "url": "https://blog.syitong.me",
+      "sameAs": null
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="https://blog.syitong.me/feed.xml" type="application/atom+xml" rel="alternate" title="孙轶同的博客|Yitong's Blog Feed">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- Mathjax support -->
+
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="https://blog.syitong.me/assets/css/main.css">
+
+<!--[if lte IE 9]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- Baidu Autopush -->
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<!-- Baidu header-->
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">孙轶同的博客|Yitong's Blog</a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/categories/" >Categories</a>
+            </li><li class="masthead__menu-item">
+              <a href="/tags/" >Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/years/" >Years</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle Menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+
+      
+        <img src="/assets/images/icon128.png" alt="Yitong Sun" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Yitong Sun</h3>
+    
+    
+      <p class="author__bio" itemprop="description">
+        长风破浪会有时
+      </p>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Universal Approximation Property of RKHS and Random Features (1)">
+    <meta itemprop="description" content="On a subset  of , a binary symmetric function  is called positive definite if the matrix  is positive semi-definite for any list of elements . It is clear that if , it is symmetric and positive definite. It is not surprise that function  is used as some sort of inner product. Such a function is called a kernel function. And it determines a class of functions in the following way,">
+    <meta itemprop="datePublished" content="February 20, 2018">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Universal Approximation Property of RKHS and Random Features (1)
+</h1>
+          
+            <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  2 minute read
+</p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>On a subset <script type="math/tex">\mathcal{X}</script> of <script type="math/tex">\mathbb{R}^d</script>, a binary symmetric function <script type="math/tex">k(x,x')</script> is called positive definite if the matrix <script type="math/tex">[k(x_i,x_j)]_{ij}</script> is positive semi-definite for any list of elements <script type="math/tex">\{ x_i \}</script>. It is clear that if <script type="math/tex">k(x,x'):= x^{\intercal}x</script>, it is symmetric and positive definite. It is not surprise that function <script type="math/tex">k</script> is used as some sort of inner product. Such a function is called a kernel function. And it determines a class of functions in the following way,</p>
+
+<script type="math/tex; mode=display">\begin{equation}
+  H_k = \left\{ f(x)=\sum_{i=1}^N c_i k(x,x_i) :
+  N\in\mathbb{N}, \{x_i\}\subset\mathcal{X}, \{ c_i \}\subset\mathbb{R} \right\}
+\end{equation}\,.</script>
+
+<p>We can further define a binary functional on <script type="math/tex">H_k</script>,</p>
+
+<script type="math/tex; mode=display">\begin{equation}
+  \langle f,g \rangle_\mathcal{k} = \sum_{i,j} a_i b_j k(x_i,x'_j)\,,
+\end{equation}</script>
+
+<p>for <script type="math/tex">f(x)=\sum a_i k(x,x_i)</script> and <script type="math/tex">g(x) = \sum b_j k(x,x'_j)</script>. We can verify that such a binary functional is an inner product since <script type="math/tex">k(x,x')</script> is positive semi-definite. So <script type="math/tex">(H_k,\langle\cdot,\cdot\rangle)</script> is a linear space equipped with an inner product. Then we consider the completion of <script type="math/tex">H_k</script> under the inner product and we get a Hilbert space <script type="math/tex">\mathcal{H}_k = \overline{H_k}</script>. This is called the reproducing kernel Hilbert space (RKHS) of <script type="math/tex">k</script>. The ‘reproducing’ indicates that <script type="math/tex">f(x)=\langle f,k(\cdot,x)\rangle</script>, that is, the evaluation functional is bounded. If <script type="math/tex">k(x,x)</script> is bounded over <script type="math/tex">\mathcal{X}</script> and <script type="math/tex">k(\cdot,x)</script> is continuous for all <script type="math/tex">x</script>, then <script type="math/tex">\mathcal{H}_k</script> consists of continuous functions, because the convergence under <script type="math/tex">\Vert\cdot\Vert_k</script> implies the convergence under <script type="math/tex">\Vert\cdot\Vert_\infty</script>.</p>
+
+<p>We can see that the definition of RKHS has nothing to do with the underlying measure on <script type="math/tex">\mathcal{X}</script>. But if <script type="math/tex">\mathcal{X}</script> is <em>compact</em> and there is a measure <script type="math/tex">\mu</script> such that <script type="math/tex">% <![CDATA[
+\mu(\mathcal{X}) < \infty %]]></script>, then all the functions in <script type="math/tex">\mathcal{H}_k</script> are <script type="math/tex">L^2</script> integrable, since for any <script type="math/tex">f\in\mathcal{H}_k</script>,</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{align}
+  \int_\mathcal{X} f^2(x)\,\mathrm{d}\mu(x)
+  & = \int_\mathcal{X} \langle f,k(\cdot,x)\rangle^2\,\mathrm{d}\mu(x) \\
+  & \le \int_\mathcal{X} \Vert f\Vert_k^2 \Vert k(\cdot,x)\Vert_k^2\,\mathrm{d}\mu(x) \\
+  & = \Vert f\Vert_k^2 \int_\mathcal{X} k(x,x)\,\mathrm{d}\mu(x)\,.
+\end{align} %]]></script>
+
+<p><script type="math/tex">k</script> also defines a Hermitian integral operator from <script type="math/tex">L^2(\mathcal{X},\mu)</script> into itself,</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{align}
+  \Sigma: L^2(\mathcal{X},\mu) & \longrightarrow L^2(\mathcal{X},\mu) \\
+  f(x) & \longrightarrow \int_\mathcal{X} k(y,x)f(y)\,\mathrm{d}\mu(x)\,.
+\end{align} %]]></script>
+
+<p>It can be shown that when <script type="math/tex">\Sigma</script> is well-defined, compact and positive semi-definite. The compactness is proved by showing that the image of unit ball of <script type="math/tex">L^2(\mathcal{X},\mu)</script> under <script type="math/tex">\Sigma</script> is equi-continuous and Ascoli-Arzela’s theorem can be applied. The positivity can be shown via the Riemann sum approximation and the positivity of <script type="math/tex">k</script>. See 3.1 in <a class="citation" href="#Cucker2002">(Cucker &amp; Smale, 2002)</a>.</p>
+
+<p>Since <script type="math/tex">\Sigma</script> is compact, we can apply spectral theorem and show that <script type="math/tex">\sum_{i=1}^\infty \lambda_i e_i(x)e_i(x')=k(x,x')</script> absolutely and uniformly, where <script type="math/tex">\lambda_i > 0</script> and <script type="math/tex">\{ e_i \}</script> are orthonormal basis of <script type="math/tex">L^2(\mathcal{X},\mu)</script> (see <a class="citation" href="#Lax2002">(Lax, 2002)</a>). This is called Mercer’s theorem. By Mercer’s theorem, we can further show that</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{align}
+  \mathrm{tr}(\Sigma) & = \sum_i \lambda_i \\
+  & = \int_\mathcal{X} \lambda_i e_i^2(x) \,\mathrm{d}\mu(x) \\
+  & = \int_\mathcal{X} k(x,x)\,\mathrm{d}\mu(x) \\
+  & \le \sup_x \vert k(x,x)\vert \mu(\mathcal{X})\,.
+\end{align} %]]></script>
+
+<p>Therefore we can define a Hilbert space <script type="math/tex">H_k</script> by</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{equation}
+  H_k:=\left\{ \sum_i a_i e_i \in L^2 : \sum_i \left(\frac{a_i}{\sqrt{\lambda_i}}\right)^2 < \infty \right\}\,,
+\end{equation} %]]></script>
+
+<p>with the inner product</p>
+
+<script type="math/tex; mode=display">\begin{equation}
+  \left\langle \sum_i a_i e_i, \sum_i b_i e_i \right\rangle_{H_k}
+  = \sum_i \frac{a_i b_i}{\lambda_i}\,.
+\end{equation}</script>
+
+<p><em>Note that <script type="math/tex">H_k</script> is still a linear subspace of <script type="math/tex">L^2</script>, but not a subspace in consideration of the inner product. And <script type="math/tex">e_i</script>s are still orthogonal but not orthonormal.</em> We can further define an operator <script type="math/tex">\Sigma^{1/2}</script> by</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{align}
+  \Sigma^{1/2}:L^2(\mathcal{X},\mu) & \longrightarrow H_k \\
+  \sum_i a_i e_i & \longrightarrow \sum_i a_i \sqrt{\lambda_i}e_i\,.
+\end{align} %]]></script>
+
+<p>It is easy to see that this is an isomorphism between <script type="math/tex">L^2</script> and the ‘smaller’ <script type="math/tex">H_k</script>. And in the end of this note, we want to show that <script type="math/tex">H_k = \mathcal{H}_k</script>. First of all, <script type="math/tex">k(\cdot,s) = \sum_i \lambda_i e_i(\cdot)e_i(s)</script> and <script type="math/tex">% <![CDATA[
+\sum_i \lambda_i e_i^2(s) = k(s,s) < \infty %]]></script> implies that <script type="math/tex">k(\cdot,s)\in H_k</script>. Second, it is easy to verify that their inner products coincide. And third, for any <script type="math/tex">f=\sum_i a_i e_i\in H_k</script>,</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{align}
+  \left\langle f,k(\cdot,s) \right\rangle_{H_k} & = \sum_i a_i e_i(s) \\
+  & = f(s)\,,
+\end{align} %]]></script>
+
+<p>so if <script type="math/tex">\langle f,k(\cdot,s)\rangle = 0</script> for all <script type="math/tex">s\in \mathcal{X}</script>, <script type="math/tex">f</script> is <script type="math/tex">0</script> constantly. This implies that <script type="math/tex">\mathcal{H}_k</script> is dense in <script type="math/tex">H_k</script>.</p>
+
+<h2 id="reference">Reference</h2>
+<ol class="bibliography"><li><span id="Cucker2002">Cucker, F., &amp; Smale, S. (2002). On the Mathematical Foundations of Learning. <i>Bulletin of the American Mathematical Society</i>, <i>39</i>, 1–49.</span></li>
+<li><span id="Lax2002">Lax, P. D. (2002). <i>Functional Analysis</i>. Wiley.</span></li></ol>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/tags/statistical-learning" class="page__taxonomy-item" rel="tag">statistical learning</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/notes" class="page__taxonomy-item" rel="tag">notes</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2018-02-20T00:00:00-05:00">February 20, 2018</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+    <h4 class="page__share-title">Share on</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?text=Universal+Approximation+Property+of+RKHS+and+Random+Features+%281%29%20https%3A%2F%2Fblog.syitong.me%2Fnotes%2Funiversality-of-RKHS-and-random-features-1%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fblog.syitong.me%2Fnotes%2Funiversality-of-RKHS-and-random-features-1%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fblog.syitong.me%2Fnotes%2Funiversality-of-RKHS-and-random-features-1%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/notes/log-loss-and-multi-class-hinge-loss-1/" class="pagination--pager" title="Log Loss and Multi-Class Hinge Loss (1)
+">Previous</a>
+    
+    
+      <a href="/notes/universality-of-RKHS-and-random-features-2/" class="pagination--pager" title="Universal Approximation Property of RKHS and Random Features (2)
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/notes/sort-select/" rel="permalink">快速排序与快速选择算法
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">之所以突然会对这个问题感兴趣是因为，大概一年前，在毫无准备的情况下去参加某互联网公司的面试，被问到了这样一个问题：“给定一个长度为n的数列，如何快速的找出其中第m大的元素。假设m远小于n。”因为对排序和选择算法完全不熟悉，只知道quicksort的时间复杂度应该是，以及从数列中找出最大值的复杂度是 。只好回答最简...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/articles/rff-intro/" rel="permalink">What Is Random Fourier Features Method?
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  2 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">Random Fourier features method, or more general random features method is a method to help transform data which are not linearly separable to linearly separa...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/articles/tmux-rename/" rel="permalink">如何阻止ssh重命名tmux窗口
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">在使用tmux多窗口终端时，每次登录学校的服务器后，窗口的标签就会被改成与服务器的prompt相同。而且登出后也不会改回来，导致tmux经常几个窗口的名字都很长，也没有反映窗口当时的状况。之所以会这样，是因为tmux默认允许一些进程修改窗口名，而ssh对终端窗口的命名规则是由服务器上的配置文件决定的。
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/articles/cb-setup/" rel="permalink">HiDPI Chromebook上Crouton的设置
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">入手HP Chromebook 13 g1大半年，一开始就安装了Gallium OS。但Gallium OS迟迟无法解决intel skylake model上的音频输出问题，加上Gallium OS的电源管理比Chrome OS要弱不少，不接电源的情况下无法长时间的使用。忍了大半年后，终于回到了Crouton的...</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2019 Yitong Sun. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.8.2/js/all.js" integrity="sha384-DJ25uNYET2XCl5ZF++U8eNxPWqcKohUUBUpKGlNLMchM7q4Wjg2CUpjHLaL8yYPH" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

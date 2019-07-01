@@ -1,0 +1,603 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.16.4 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>            Euler’s Limit Formula for the Gamma Function - 孙轶同的博客      Yitong’s Blog      </title>
+<meta name="description" content="This note is based on the Appendix A.7 of (Grafakos, 2008). The gamma function  is defined by the integral . For integer  this defines the factorial up to . In general this definition holds for all complex numbers except for non-positive integers, where it has simple poles. This can be seen from the Taylor expansion of .">
+
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="孙轶同的博客|Yitong's Blog">
+<meta property="og:title" content="Euler’s Limit Formula for the Gamma Function">
+<meta property="og:url" content="https://blog.syitong.me/notes/euler-gamma-fn/">
+
+
+  <meta property="og:description" content="This note is based on the Appendix A.7 of (Grafakos, 2008). The gamma function  is defined by the integral . For integer  this defines the factorial up to . In general this definition holds for all complex numbers except for non-positive integers, where it has simple poles. This can be seen from the Taylor expansion of .">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2018-07-22T00:00:00-04:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://blog.syitong.me/notes/euler-gamma-fn/">
+
+
+
+
+
+
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Yitong Sun",
+      "url": "https://blog.syitong.me",
+      "sameAs": null
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="https://blog.syitong.me/feed.xml" type="application/atom+xml" rel="alternate" title="孙轶同的博客|Yitong's Blog Feed">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- Mathjax support -->
+
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="https://blog.syitong.me/assets/css/main.css">
+
+<!--[if lte IE 9]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- Baidu Autopush -->
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<!-- Baidu header-->
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">孙轶同的博客|Yitong's Blog</a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/categories/" >Categories</a>
+            </li><li class="masthead__menu-item">
+              <a href="/tags/" >Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/years/" >Years</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle Menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+
+      
+        <img src="/assets/images/icon128.png" alt="Yitong Sun" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Yitong Sun</h3>
+    
+    
+      <p class="author__bio" itemprop="description">
+        长风破浪会有时
+      </p>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Euler’s Limit Formula for the Gamma Function">
+    <meta itemprop="description" content="This note is based on the Appendix A.7 of (Grafakos, 2008). The gamma function  is defined by the integral . For integer  this defines the factorial up to . In general this definition holds for all complex numbers except for non-positive integers, where it has simple poles. This can be seen from the Taylor expansion of .">
+    <meta itemprop="datePublished" content="July 22, 2018">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Euler’s Limit Formula for the Gamma Function
+</h1>
+          
+            <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>This note is based on the Appendix A.7 of <a class="citation" href="#Grafakos2008">(Grafakos, 2008)</a>. The gamma function <script type="math/tex">\Gamma(x)</script> is defined by the integral <script type="math/tex">\int_0^\infty t^{x-1}e^{-t}</script>. For integer <script type="math/tex">x</script> this defines the factorial up to <script type="math/tex">x-1</script>. In general this definition holds for all complex numbers except for non-positive integers, where it has simple poles. This can be seen from the Taylor expansion of <script type="math/tex">e^{-t}</script>.</p>
+
+<p>Euler’s limit formula for the gamma function considers the following functions</p>
+
+<script type="math/tex; mode=display">\begin{equation}
+\Gamma_n(z) = \int_0^n \left(1-\frac{t}{n}\right)^nt^{z-1}dt
+\end{equation}</script>
+
+<p>for integer <script type="math/tex">n</script>s and <script type="math/tex">Re(z)>0</script>. Because only for <script type="math/tex">Re(z)>0</script>, the improper integral is well defined. Obviously the integrand replace <script type="math/tex">e^{-t}</script> by its well known approximation. And Euler’s theorem says that <script type="math/tex">\lim_{n\to\infty}\Gamma_n(z)=\Gamma(z)</script>.</p>
+
+<p>The proof considers the difference of two definitions and split the integration interval into 3 parts.</p>
+
+<script type="math/tex; mode=display">\begin{equation}
+\Gamma(z)-\Gamma_n(z) = I_1(z) + I_2(z) + I_3(z)
+\end{equation}</script>
+
+<p>where</p>
+
+<script type="math/tex; mode=display">\begin{equation}
+I_1(z) = \int_n^\infty t^{x-1}e^{-t}dt \\
+I_2(z) = \int_{n/2}^n \left(e^{-t}-\left(1-\frac{t}{n}\right)^n\right)t^{x-1}dt \\
+I_3(z) = \int_0^{n/2} \left(e^{-t}-\left(1-\frac{t}{n}\right)^n\right)t^{x-1}dt\,.
+\end{equation}</script>
+
+<p><script type="math/tex">I_1</script> goes to <script type="math/tex">0</script> for any <script type="math/tex">z</script> when <script type="math/tex">n\to\infty</script>. To study the difference in <script type="math/tex">I_2</script> and <script type="math/tex">I_3</script>, we rewrite</p>
+
+<script type="math/tex; mode=display">\begin{equation}
+\left(1-\frac{t}{n}\right)^n = \exp(n\ln(1-t/n))
+= \exp\left(-n\sum_{k=1}^\infty \frac{1}{k}\left(\frac{t}{n}\right)^k\right)\,.
+\end{equation}</script>
+
+<p>Then</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{align}
+e^{-t}-\left(1-\frac{t}{n}\right)^n
+& = e^{-t}\left(1-\exp\left(-\sum_{k=2}^\infty\frac{t^k}{kn^{k-1}}\right)\right) \\
+& \le e^{-t}\,.
+\end{align} %]]></script>
+
+<p>By dominant convergence theorem we know <script type="math/tex">I_2</script> also goes to <script type="math/tex">0</script>. For <script type="math/tex">I_3</script>, we know that</p>
+
+<script type="math/tex; mode=display">\begin{equation}
+\sum_{k=2}^\infty \frac{t^k}{kn^{k-1}}
+\le \frac{t^2}{n}\sum_{k=2}^\infty\frac{(1/2)^{k-1}}{k}
+= c\left(\frac{t^2}{n}\right)\,.
+\end{equation}</script>
+
+<p>So</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{align}
+e^{-t}-\left(1-\frac{t}{n}\right)^n & \le e^{-t}(1-\exp(-ct^2/n)) \\
+& \le \frac{ct^2}{n}e^{-t} \\
+& \to 0\,,
+\end{align} %]]></script>
+
+<p>as <script type="math/tex">n\to\infty</script>. Again by dominant convergence theorem, we have <script type="math/tex">I_3</script> goes to <script type="math/tex">0</script>.</p>
+
+<h2 id="reference">Reference</h2>
+
+<ol class="bibliography"><li><span id="Grafakos2008">Grafakos, L. (2008). <i>Classical Fourier Analysis</i>. Springer New York.</span></li></ol>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/tags/asymptotic-analysis" class="page__taxonomy-item" rel="tag">asymptotic analysis</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/notes" class="page__taxonomy-item" rel="tag">notes</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2018-07-22T00:00:00-04:00">July 22, 2018</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+    <h4 class="page__share-title">Share on</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?text=Euler%27s+Limit+Formula+for+the+Gamma+Function%20https%3A%2F%2Fblog.syitong.me%2Fnotes%2Feuler-gamma-fn%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fblog.syitong.me%2Fnotes%2Feuler-gamma-fn%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fblog.syitong.me%2Fnotes%2Feuler-gamma-fn%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/articles/jekyll/" class="pagination--pager" title="利用Jekyll搭建博客
+">Previous</a>
+    
+    
+      <a href="/notes/asymtotic-bessel/" class="pagination--pager" title="Asymptotic Expansion of Bessel Functions For Large Argument
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/notes/sort-select/" rel="permalink">快速排序与快速选择算法
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">之所以突然会对这个问题感兴趣是因为，大概一年前，在毫无准备的情况下去参加某互联网公司的面试，被问到了这样一个问题：“给定一个长度为n的数列，如何快速的找出其中第m大的元素。假设m远小于n。”因为对排序和选择算法完全不熟悉，只知道quicksort的时间复杂度应该是，以及从数列中找出最大值的复杂度是 。只好回答最简...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/articles/rff-intro/" rel="permalink">What Is Random Fourier Features Method?
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  2 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">Random Fourier features method, or more general random features method is a method to help transform data which are not linearly separable to linearly separa...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/articles/tmux-rename/" rel="permalink">如何阻止ssh重命名tmux窗口
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">在使用tmux多窗口终端时，每次登录学校的服务器后，窗口的标签就会被改成与服务器的prompt相同。而且登出后也不会改回来，导致tmux经常几个窗口的名字都很长，也没有反映窗口当时的状况。之所以会这样，是因为tmux默认允许一些进程修改窗口名，而ssh对终端窗口的命名规则是由服务器上的配置文件决定的。
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/articles/cb-setup/" rel="permalink">HiDPI Chromebook上Crouton的设置
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">入手HP Chromebook 13 g1大半年，一开始就安装了Gallium OS。但Gallium OS迟迟无法解决intel skylake model上的音频输出问题，加上Gallium OS的电源管理比Chrome OS要弱不少，不接电源的情况下无法长时间的使用。忍了大半年后，终于回到了Crouton的...</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2019 Yitong Sun. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.8.2/js/all.js" integrity="sha384-DJ25uNYET2XCl5ZF++U8eNxPWqcKohUUBUpKGlNLMchM7q4Wjg2CUpjHLaL8yYPH" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

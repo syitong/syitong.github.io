@@ -1,0 +1,599 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.16.4 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>            Upper and Lower Bounds of Sample Complexity of Supervised Learning - 孙轶同的博客      Yitong’s Blog      </title>
+<meta name="description" content="By the note on No-Free-Lunch, we concluded that there is no learning algorithms solving all problems with a fixed learning rate. It is because of the difficulty on controlling the approximation error. However, the property of the estimation error has been known since 1990s. These results can be found in several textbooks about statistical learning theory, e.g., (Vapnik, 1998; Devroye, Györfi, &amp; Lugosi, 1997).">
+
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="孙轶同的博客|Yitong's Blog">
+<meta property="og:title" content="Upper and Lower Bounds of Sample Complexity of Supervised Learning">
+<meta property="og:url" content="https://blog.syitong.me/notes/sample-complexity/">
+
+
+  <meta property="og:description" content="By the note on No-Free-Lunch, we concluded that there is no learning algorithms solving all problems with a fixed learning rate. It is because of the difficulty on controlling the approximation error. However, the property of the estimation error has been known since 1990s. These results can be found in several textbooks about statistical learning theory, e.g., (Vapnik, 1998; Devroye, Györfi, &amp; Lugosi, 1997).">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2017-07-25T00:00:00-04:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://blog.syitong.me/notes/sample-complexity/">
+
+
+
+
+
+
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Yitong Sun",
+      "url": "https://blog.syitong.me",
+      "sameAs": null
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="https://blog.syitong.me/feed.xml" type="application/atom+xml" rel="alternate" title="孙轶同的博客|Yitong's Blog Feed">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- Mathjax support -->
+
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="https://blog.syitong.me/assets/css/main.css">
+
+<!--[if lte IE 9]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- Baidu Autopush -->
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+<!-- Baidu header-->
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">孙轶同的博客|Yitong's Blog</a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/categories/" >Categories</a>
+            </li><li class="masthead__menu-item">
+              <a href="/tags/" >Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/years/" >Years</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle Menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+
+      
+        <img src="/assets/images/icon128.png" alt="Yitong Sun" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Yitong Sun</h3>
+    
+    
+      <p class="author__bio" itemprop="description">
+        长风破浪会有时
+      </p>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Upper and Lower Bounds of Sample Complexity of Supervised Learning">
+    <meta itemprop="description" content="By the note on No-Free-Lunch, we concluded that there is no learning algorithms solving all problems with a fixed learning rate. It is because of the difficulty on controlling the approximation error. However, the property of the estimation error has been known since 1990s. These results can be found in several textbooks about statistical learning theory, e.g., (Vapnik, 1998; Devroye, Györfi, &amp; Lugosi, 1997).">
+    <meta itemprop="datePublished" content="July 25, 2017">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Upper and Lower Bounds of Sample Complexity of Supervised Learning
+</h1>
+          
+            <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  3 minute read
+</p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>By the note <em>on No-Free-Lunch</em>, we concluded that there is no learning algorithms solving all problems with a fixed learning rate. It is because of the difficulty on controlling the approximation error. However, the property of the estimation error has been known since 1990s. These results can be found in several textbooks about statistical learning theory, e.g., <a class="citation" href="#Vapnik1998">(Vapnik, 1998; Devroye, Györfi, &amp; Lugosi, 1997)</a>.</p>
+
+<p>When <script type="math/tex">\inf_{f\in\mathcal{H}}R_\mathbb{P}(f)=0</script> for all <script type="math/tex">\mathbb{P}\in\Pi</script>,</p>
+
+<script type="math/tex; mode=display">\begin{equation}
+c\frac{d_{VC}}{m}\le\inf_\mathcal{A}\sup_{\mathbb{P}}R_\mathbb{P}(f_\mathcal{A,m})\le\sup_\mathbb{P}R_\mathbb{P}(f_{ERM,m})\le C\frac{d_{VC}\ln m}{m}\,,
+\end{equation}</script>
+
+<p>where <script type="math/tex">c</script> and <script type="math/tex">C</script> are absolute constants.</p>
+
+<p>When <script type="math/tex">\inf_{f\in\mathcal{H}}R_\mathbb{P}(f)\ne0</script> for some <script type="math/tex">\mathbb{P}\in\Pi</script>,</p>
+
+<script type="math/tex; mode=display">\begin{equation}
+c\sqrt{\frac{d_{VC}}{m}}\le\inf_\mathcal{A}\sup_{\mathbb{P}}R_\mathbb{P}(f_\mathcal{A,m})-R^*_\mathbb{P,\mathcal{H}}\le\sup_\mathbb{P}R_\mathbb{P}(f_{ERM,m})-R^*_\mathbb{P,\mathcal{H}}\le C\sqrt{\frac{d_{VC}\ln m}{m}}\,.
+\end{equation}</script>
+
+<p>Note that the loss function considered here is the <script type="math/tex">0-1</script> loss and the VC dimension is with respect to the loss function composed with the hypothesis. And the upper bound actually comes from the uniform convergence of the empirical risk to the expected risk over all the hypotheses in <script type="math/tex">\mathcal{H}</script>.</p>
+
+<p>If we consider the convex loss functions instead of <script type="math/tex">0-1</script>, we can use Rademacher complexity to obtain similar upper bounds.</p>
+
+<p><strong>Q: Lower bounds for this case?</strong></p>
+
+<p>The convex loss function case can be further generalized to the stochastic convex optimization problem. By (missing reference), even though for supervised learning problems, the estimation error of ERM can be provided by the uniform convergence results, ERM may not work at all for general case and naturally we won’t have uniform convergence in such a case. The counterexample is constructed in two steps. First, consider the finite dimensional space <script type="math/tex">\mathbb{R}^d</script> and sample size <script type="math/tex">% <![CDATA[
+n<\log_2 d %]]></script>. The function <script type="math/tex">f_\alpha(w)=\Vert\alpha\circ w\Vert</script>, where <script type="math/tex">\circ</script> represents the element-wise product and each coordinate of <script type="math/tex">\alpha</script> is independent Bernoulli random variables. The stochastic convex optimization problem we consider here is</p>
+
+<script type="math/tex; mode=display">\begin{equation}
+\text{minimize}\quad \mathop{\mathbb{E}}\limits_\alpha f_\alpha(w)\quad\text{subject to}\quad \Vert w\Vert\le1\,.
+\end{equation}</script>
+
+<p>The objective is <script type="math/tex">1</script>-Lipschitz. Since <script type="math/tex">% <![CDATA[
+n<\log_2 d %]]></script>, it is not hard to see that with probability greater than <script type="math/tex">1-e^{-1}</script>, there exists a coordinate not observed in any of the <script type="math/tex">n</script> samples. Assume this coordinate is <script type="math/tex">j</script>th. Then <script type="math/tex">e_j</script> is the empirical minimizer attaining <script type="math/tex">0</script>. However the expected objective is <script type="math/tex">1/2</script> at <script type="math/tex">e_j</script>. This is why in <a class="citation" href="#Feldman2016">(Feldman, 2016)</a>, it claims that the lower bound <script type="math/tex">n>\log d</script> has been proved in (missing reference). And actually Feldman shows that for the finite dimensional Lipschitz objective, the sample complexity of uniform convergence is <script type="math/tex">\theta(d/\epsilon^2)</script>. The sample complexity of ERM is <script type="math/tex">\Omega(d/\epsilon)</script> and <script type="math/tex">O(d/\epsilon^2)</script>. Without Lipschitz condition, even in the finite dimensional space, there are stochastic convex optimization problems that can not be solved by the ERM.</p>
+
+<p>Now the construction can be extended to the case <script type="math/tex">w\in\ell^2</script> and <script type="math/tex">\alpha</script> is a infinite sequence of independent Bernoulli variables. And there is a coordinate not being observed almost surely.</p>
+
+<p>Even though in this case, the minimizer set of the empirical risk always contains <script type="math/tex">0</script>, which is also the minimizer of the expected objective, there is a way to modify the objective to fix this problem by adding a deterministic term at the end.</p>
+
+<script type="math/tex; mode=display">\begin{equation}
+g_\alpha(w)=f_\alpha(w)+\epsilon\sum_{i=1}^\infty2^{-i}(w_i-1)^2\,.
+\end{equation}</script>
+
+<p>Then, we apply the same argument, assume that <script type="math/tex">j</script>th coordinate is not observed. Then <script type="math/tex">w_j=1</script> for what ever the minimizer is for the unconstrained problem. In other words, the solution set of the unconstrained problem satisfies <script type="math/tex">\Vert w\Vert\ge1</script>. Then the problem with constraint <script type="math/tex">\Vert w\Vert\le 1</script> must attain its minimum at <script type="math/tex">\Vert w\Vert=1</script>. However, note that</p>
+
+<script type="math/tex; mode=display">\begin{equation}
+\mathop{\mathbb{E}}_\alpha g_\alpha(0)=\epsilon\le\inf_{\Vert w\Vert\ge\epsilon}\mathop{\mathbb{E}}_\alpha g_\alpha(w)\,.
+\end{equation}</script>
+
+<p>When <script type="math/tex">\epsilon</script> is small enough, the solution set of the expected risk is contained in a small ball around the origin, which is far from the solution set of the empirical risk.</p>
+
+<p>This example is not strongly convex either. For strongly convex case, ERM always works with <script type="math/tex">O(\frac{\epsilon}{d\lambda})</script> samples, even though it still may not be uniform convergent. This rate is similar with the fast rate of regularized risks in the analysis of KSVM.</p>
+
+<h2 id="reference">Reference</h2>
+<ol class="bibliography"><li><span id="Vapnik1998">Vapnik, V. N. (1998). <i>Statistical Learning Theory</i>. New York: Wiley.</span></li>
+<li><span id="Devroye1997">Devroye, L., Györfi, L., &amp; Lugosi, G. (1997). <i>A Probabilistic Theory of Pattern Recognition</i>. Springer New York.</span></li>
+<li><span id="Feldman2016">Feldman, V. (2016). Generalization of ERM in Stochastic Convex Optimization: The Dimension Strikes Back. In D. D. Lee, M. Sugiyama, U. V. Luxburg, I. Guyon, &amp; R. Garnett (Eds.), <i>Advances in Neural Information Processing Systems 29</i> (pp. 3576–3584). Curran Associates, Inc.</span></li></ol>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/tags/optimization" class="page__taxonomy-item" rel="tag">optimization</a><span class="sep">, </span>
+    
+      
+      
+      <a href="/tags/statistical-learning" class="page__taxonomy-item" rel="tag">statistical learning</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/notes" class="page__taxonomy-item" rel="tag">notes</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2017-07-25T00:00:00-04:00">July 25, 2017</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+    <h4 class="page__share-title">Share on</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?text=Upper+and+Lower+Bounds+of+Sample+Complexity+of+Supervised+Learning%20https%3A%2F%2Fblog.syitong.me%2Fnotes%2Fsample-complexity%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fblog.syitong.me%2Fnotes%2Fsample-complexity%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fblog.syitong.me%2Fnotes%2Fsample-complexity%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/notes/on-hoeffding-inequality/" class="pagination--pager" title="On Hoeffding’s Inequality
+">Previous</a>
+    
+    
+      <a href="/articles/Chromebook%E5%A6%82%E4%BD%95%E8%AE%A9%E6%88%91%E5%8F%98%E6%88%90%E4%B8%80%E4%B8%AALinux%E7%B2%89/" class="pagination--pager" title="Chromebook如何让我变一个Linux粉
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/notes/sort-select/" rel="permalink">快速排序与快速选择算法
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">之所以突然会对这个问题感兴趣是因为，大概一年前，在毫无准备的情况下去参加某互联网公司的面试，被问到了这样一个问题：“给定一个长度为n的数列，如何快速的找出其中第m大的元素。假设m远小于n。”因为对排序和选择算法完全不熟悉，只知道quicksort的时间复杂度应该是，以及从数列中找出最大值的复杂度是 。只好回答最简...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/articles/rff-intro/" rel="permalink">What Is Random Fourier Features Method?
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  2 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">Random Fourier features method, or more general random features method is a method to help transform data which are not linearly separable to linearly separa...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/articles/tmux-rename/" rel="permalink">如何阻止ssh重命名tmux窗口
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">在使用tmux多窗口终端时，每次登录学校的服务器后，窗口的标签就会被改成与服务器的prompt相同。而且登出后也不会改回来，导致tmux经常几个窗口的名字都很长，也没有反映窗口当时的状况。之所以会这样，是因为tmux默认允许一些进程修改窗口名，而ssh对终端窗口的命名规则是由服务器上的配置文件决定的。
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/articles/cb-setup/" rel="permalink">HiDPI Chromebook上Crouton的设置
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">入手HP Chromebook 13 g1大半年，一开始就安装了Gallium OS。但Gallium OS迟迟无法解决intel skylake model上的音频输出问题，加上Gallium OS的电源管理比Chrome OS要弱不少，不接电源的情况下无法长时间的使用。忍了大半年后，终于回到了Crouton的...</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2019 Yitong Sun. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.8.2/js/all.js" integrity="sha384-DJ25uNYET2XCl5ZF++U8eNxPWqcKohUUBUpKGlNLMchM7q4Wjg2CUpjHLaL8yYPH" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>
