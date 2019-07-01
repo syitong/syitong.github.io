@@ -1,1 +1,1 @@
-Sitemap: https://blog.syitong.me/sitemap.xml
+Sitemap: https://syitong.github.io/sitemap.xml
