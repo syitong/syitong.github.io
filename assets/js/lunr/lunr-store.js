@@ -56,7 +56,7 @@ var store = [{
         "teaser":null},{
         "title": "Capacity of Neural Networks (3): Main Results",
         "excerpt":"In this note, we will look at the Rademacher complexity of 2-layer neural networks, and compare it with the result of kernel method. This is the main result of (Bartlett &amp; Mendelson, 2003). We rephrase it as follows. Theorem. Suppose that has Lipschitz constant . Define the class computed by...","categories": ["notes"],
-        "tags": ["statistical learning","neural networks"],
+        "tags": ["statistical learning","neural network"],
         "url": "https://syitong.github.io/notes/capacity-of-neural-networks-3/",
         "teaser":null},{
         "title": "Capacity of Neural Networks (4): VC-Dimension and Rademacher Complexity",
